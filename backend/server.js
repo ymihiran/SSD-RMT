@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./db.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+const helmet = require('helmet');
 
 const app = express();
 
@@ -13,6 +14,9 @@ const PORT = process.env.PORT || 8070;
 
 //Connect data base
 connectDB();
+
+// Enable security headers using helmet middleware
+app.use(helmet());
 
 app.use(express.json());
 app.use(cors());
