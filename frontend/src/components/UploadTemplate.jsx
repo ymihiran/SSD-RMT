@@ -90,7 +90,7 @@ export default function UploadTemplate() {
 
       window.location.reload(false);
     } catch (error) {
-      console.log(error);
+      console.log("Oops, an error occurred. Try again");
     }
   };
 

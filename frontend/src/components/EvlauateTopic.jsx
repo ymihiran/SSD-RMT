@@ -11,8 +11,8 @@ export default function EvaluateTopic()  {
     const [id, setid] = useState();
     const [groupID, setgroupID] = useState(localStorage.getItem('groupID'));
     const [groupName, setgroupName] = useState();
-    const [rField, setrField] = useState();
-    const [rTopic, setrTopic] = useState();
+    const [rField, setrField] = useState(localStorage.getItem('rField'));
+    const [rTopic, setrTopic] = useState(localStorage.getItem('rTopic'));
     const [leaderEmail, setleaderEmail] = useState();
     const [comment, setacomment] = useState();
     const [Evaluation, setEvaluation] = useState();
@@ -48,43 +48,31 @@ export default function EvaluateTopic()  {
         authenticate();
     }, 0);
 
-    const getData = async (path) => {await axios.get(path).then((res)=>{
-        setRequest(res.data.topicRouter);
-        }).catch((err)=>{
-            alert(err.message);
-    });
-    }
-    
-
-    
-
     useEffect(()=>{
 
-        setEvaluation(localStorage.getItem('Evaluation'));
-        setid(localStorage.getItem('ID'));
-
-        const path = "http://localhost:8070/topic/group/"+localStorage.getItem('groupID');
+        const path = "http://localhost:8070/topic/group/"+groupID;
         console.log(path);
 
-        
-        getData(path);
+        axios.get(path).then((res)=>{
+            setRequest(res.data.topicRouter);
+            }).catch((err)=>{
+                console.log("Oops! Error occured while fetching data.");
+        });
 
         console.log(request.groupName);
 
 
-        settid(request.tid);
-        setgroupID(request.groupID);
-        setgroupName(request.groupName);
-        setrField(request.rField);
-        setrTopic(request.rTopic);
-        setleaderEmail(request.leaderEmail);
-        setacomment(request.comment);
 
     },[])
+
+    //function to submit data
+    
 
     function submitData(e) {
         e.preventDefault();
         settid("1111");
+
+   
         const newTopic = {
               
             tid,
@@ -97,9 +85,7 @@ export default function EvaluateTopic()  {
             Evaluation,
         }
 
-        let path = "http://localhost:8070/evaluatedTopic/"+id;
-
-        axios.put(path,newTopic).then(()=>{
+        axios.post("http://localhost:8070/evaluatedTopic/",newTopic).then(()=>{
 
             Store.addNotification({
                 title: "Evaluation Sent Successfully.",
@@ -118,15 +104,30 @@ export default function EvaluateTopic()  {
                 width:400
             });
             e.target.reset();
+                   
             history.push('/EvaluatedTopicList');
             
     
          }).catch((err)=>{
     
-            alert(err);
+            alert("Post ERROR: ",err);
          })
          document.getElementById("subBut").click();
-         
+        //  emailjs
+        //         .sendForm(
+        //             'service_tc03vnm',
+        //             'template_ajm9ro9',
+        //             e.currentTarget,
+        //             '-utNmr2eLLLW4jLyR'
+        //         )
+        //         .then(
+        //             (result) => {
+        //             console.log("Mail Sent");
+        //             },
+        //             (error) => {
+        //             console.log(error.text);
+        //             }
+        //         );
 
     }
 
@@ -145,7 +146,7 @@ export default function EvaluateTopic()  {
                     console.log("Mail Sent");
                     },
                     (error) => {
-                    console.log(error.text);
+                    console.log("Oops, an error occurred. Try again");
                     }
                 );
     }
@@ -163,13 +164,13 @@ export default function EvaluateTopic()  {
                         <div className="mb-3">
                             <label className="s-form-label" >Group ID</label>
                             <input className="s-input" disabled type="text"  style={{width:"450px"}}  id="cUName"
-                                value={groupID}
+                                value={request.groupID}
                             />
                         </div>
 
                         <div className="mb-3">
                             <label className="s-form-label">Group Name</label>
-                            <input  className="s-input" disabled  type="text"  style={{width:"450px"}}  id="cName"
+                            <input  className="s-input" disabled  type="text"  style={{width:"450px"}}  id="gname"
                                 value={request.groupName}
                             />
                         </div>
@@ -177,7 +178,7 @@ export default function EvaluateTopic()  {
                         <div className="mb-3">
                             <label className="s-form-label">Research Field</label>
                             
-                            <input  className="s-input" disabled  type="text"  style={{width:"450px"}}  id="cName"
+                            <input  className="s-input" disabled  type="text"  style={{width:"450px"}}  id="rfield"
                                 value={request.rField}
                                 />
 
@@ -185,7 +186,7 @@ export default function EvaluateTopic()  {
 
                         <div className="mb-3">
                             <label className="s-form-label">Research Topic</label>
-                            <input className="s-input" disabled type="text"  style={{width:"450px"}}  id="cName"   
+                            <input className="s-input" disabled type="text"  style={{width:"450px"}}  id="rtopic"   
                                 value={request.rTopic}
                             />
                            
@@ -193,14 +194,14 @@ export default function EvaluateTopic()  {
 
                         <div className="mb-3">
                             <label className="s-form-label">Group Leader's email</label>
-                            <input className="s-input" disabled type="text"  style={{width:"450px"}}  id="cName"
+                            <input className="s-input" disabled type="text"  style={{width:"450px"}}  id="mail"
                                 value={request.leaderEmail}
                             />
                         </div>
 
                         <div className="mb-3">
                             <label className="s-form-label">Comments (Optional)</label>
-                            <input className="s-input" disabled type="text"  style={{width:"450px", height:"100px"}}  id="cName"
+                            <input className="s-input" disabled type="text"  style={{width:"450px", height:"100px"}}  id="comment"
                                 value={request.comment}
                             />
                         </div>
@@ -233,17 +234,21 @@ export default function EvaluateTopic()  {
                         
                         <div className="mb-3">
                             <label className="t-form-label">Comments</label>
-                            <input type="text" name="message"  style={{width:"450px", height:"100px"}}  id="cName"
+                            <input type="text" name="amessage" style={{width:"450px", height:"100px"}}  id="cName"
                                 required
-                                value={Evaluation}
                                 onChange={(e)=>setEvaluation(e.target.value)}
                             />
-                        </div>
 
-                        <input type="hidden" name="mail" style={{width:"450px", height:"100px"}}  id="gid"
+                        <input type="hidden" name="amail" style={{width:"450px", height:"100px"}}  id="gid"
                                 value={request.leaderEmail}
                                 
                             />
+
+                               
+                        </div>
+
+                        
+                        
 
 
 

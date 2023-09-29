@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./db.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 
 const app = express();
 
@@ -14,10 +15,17 @@ const PORT = process.env.PORT || 8070;
 //Connect data base
 connectDB();
 
+// Enable security headers using helmet middleware
+app.use(helmet());
+
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL // Replace with your allowed origin
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+
 
 // Document/ presentation Evaluate Route
 import evaluationRouter from "./routes/EvaluationRoute.js";

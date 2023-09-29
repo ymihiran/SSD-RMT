@@ -35,7 +35,7 @@ export const getAllEvaluatedTopic = async (req, res) => {
   await TopicReg.find().exec((err, Topic) => {
     if (err) {
       return res.status(400).json({
-        error: err,
+        error: "Failed to get all Topics",
       });
     }
     return res.status(200).json({
@@ -51,7 +51,7 @@ export const getSingleEvaluatedTopic = async (req, res) => {
   await TopicReg.find({ _id: topicid }).exec((err, Topic) => {
     if (err) {
       return res.status(400).json({
-        error: err,
+        error: "Failed to get a Topic",
       });
     }
     return res.status(200).json({
