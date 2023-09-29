@@ -58,7 +58,7 @@ export const sendReq = async (req, res) => {
   //send mail to co supervisor
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
+      console.log("Send mail erro");
     } else {
       console.log("Email sent: " + info.response);
     }

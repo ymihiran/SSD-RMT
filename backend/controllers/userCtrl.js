@@ -114,7 +114,7 @@ const userCtrl={
         Users.find().exec((err,Users)=>{
               if(err){
                   return res.status(400).json({
-                     error:err
+                     error:"Failed to get all users",
                  });
              }
                 return res.status(200).json({
@@ -129,7 +129,7 @@ const userCtrl={
         Users.find({research_area:r_area,user_role:"Panel Member"}).exec((err,Users)=>{
               if(err){
                   return res.status(400).json({
-                     error:err
+                     error:"Failed to get all users"
                  });
              }
                 return res.status(200).json({

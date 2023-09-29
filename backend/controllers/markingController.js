@@ -42,7 +42,7 @@ export const getAllMarkings = async (req, res) => {
   Marking.find().exec((err, Marking) => {
     if (err) {
       return res.status(400).json({
-        error: err,
+        error: "Failed to get all Markings",
       });
     }
     return res.status(200).json({
@@ -58,7 +58,7 @@ export const getSingleMarking = async (req, res) => {
   Marking.find({ _id: mid }).exec((err, Marking) => {
     if (err) {
       return res.status(400).json({
-        error: err,
+        error: "Failed to get a Marking",
       });
     }
     return res.status(200).json({
