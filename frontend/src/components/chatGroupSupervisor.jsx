@@ -55,7 +55,7 @@ export default function ChatGroupSupervisor() {
     //get messages from db
     const getAllMsg = async () => {
       const allChat = await axios
-        .get(`https://research-management-tool-ym.herokuapp.com/chat/`)
+        .get(`http://localhost:8070/chat/`)
         .then((res) => {
           setAllMsg(res.data);
         })
@@ -65,7 +65,7 @@ export default function ChatGroupSupervisor() {
     //get replies from db
     const getAllReply = async () => {
       const allReplys = await axios
-        .get(`https://research-management-tool-ym.herokuapp.com/chatReplies/group/replyMsgs`)
+        .get(`http://localhost:8070/chatReplies/group/replyMsgs`)
         .then((res) => {
           setReplyMsg(res.data);
         })
@@ -83,7 +83,7 @@ export default function ChatGroupSupervisor() {
     let ans = window.confirm("Do you want to delete this message ?");
 
     if (ans) {
-      await axios.delete(`https://research-management-tool-ym.herokuapp.com/chat/${id}`).then((res) => {
+      await axios.delete(`http://localhost:8070/chat/${id}`).then((res) => {
         console.log(res);
         window.location.reload(false);
       });
@@ -99,7 +99,7 @@ export default function ChatGroupSupervisor() {
 
     if (ans) {
       await axios
-        .delete(`https://research-management-tool-ym.herokuapp.com/chatReplies/${id}`)
+        .delete(`http://localhost:8070/chatReplies/${id}`)
         .then((res) => {
           console.log(res);
           window.location.reload(false);
@@ -123,7 +123,7 @@ export default function ChatGroupSupervisor() {
     console.log("userSup", userSup);
 
     await axios
-      .post(`https://research-management-tool-ym.herokuapp.com/chatReplies`, {
+      .post(`http://localhost:8070/chatReplies`, {
         userSup,
         messageID,
         message,

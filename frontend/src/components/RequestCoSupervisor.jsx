@@ -18,7 +18,7 @@ export default function RequestCoSupervisor() {
     //get supervisor details
     axios
       .get(
-        `https://research-management-tool-ym.herokuapp.com/supervisor/co/${localStorage.getItem(
+        `http://localhost:8070/supervisor/co/${localStorage.getItem(
           "rField"
         )}/${"Co-Supervisor"}`
       )
@@ -29,7 +29,7 @@ export default function RequestCoSupervisor() {
 
     //get request details
     axios
-      .get(`https://research-management-tool-ym.herokuapp.com/request/${localStorage.getItem("groupID")}`)
+      .get(`http://localhost:8070/request/${localStorage.getItem("groupID")}`)
       .then((res) => {
         console.log("requested ", res.data.requested);
         setStatus(res.data.requested);
@@ -50,7 +50,7 @@ export default function RequestCoSupervisor() {
 
     if (ans) {
       await axios
-        .post(`https://research-management-tool-ym.herokuapp.com/request/`, newRequest)
+        .post(`http://localhost:8070/request/`, newRequest)
         .then(() => {
           alert("Request sent successfully");
           setStatus("send");
@@ -61,7 +61,7 @@ export default function RequestCoSupervisor() {
 
       //get request details
       await axios
-        .get(`https://research-management-tool-ym.herokuapp.com/request/${localStorage.getItem("groupID")}`)
+        .get(`http://localhost:8070/request/${localStorage.getItem("groupID")}`)
         .then((res) => {
           console.log("request details ", res.data);
           setStatus(res.data.requested);

@@ -45,7 +45,7 @@ export default function AllCreateTypes() {
       JSON.parse(localStorage.getItem("user") || "[]").user_role != "Admin"
     );
     axios
-      .get("https://research-management-tool-ym.herokuapp.com/template")
+      .get("http://localhost:8070/template")
       .then((res) => {
         setTypes(res.data);
         console.log(res.data);
@@ -72,7 +72,7 @@ export default function AllCreateTypes() {
 
     if (ans) {
       axios
-        .delete(`https://research-management-tool-ym.herokuapp.com/template/${_id}`)
+        .delete(`http://localhost:8070/template/${_id}`)
         .then((res) => {
           Store.addNotification({
             title: "Delete Succesfully.",

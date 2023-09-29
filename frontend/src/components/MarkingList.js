@@ -43,7 +43,7 @@ setTimeout(() => {
 
   useEffect(() => {
     axios
-      .get("https://research-management-tool-ym.herokuapp.com/markingScheme")
+      .get("http://localhost:8070/markingScheme")
       .then((res) => {
         setRequest(res.data.markingRouter);
       })

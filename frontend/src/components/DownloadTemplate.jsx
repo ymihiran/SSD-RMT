@@ -12,7 +12,7 @@ export default function DownloadTemplate() {
 
   useEffect(() => {
     axios
-      .get("https://research-management-tool-ym.herokuapp.com/template")
+      .get("http://localhost:8070/template")
       .then((res) => {
         setTypes(res.data);
         console.log(res.data);

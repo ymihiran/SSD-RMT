@@ -50,7 +50,7 @@ export default function EvaluateTopic()  {
 
     useEffect(()=>{
 
-        const path = "https://research-management-tool-ym.herokuapp.com/topic/group/"+groupID;
+        const path = "http://localhost:8070/topic/group/"+groupID;
         console.log(path);
 
         axios.get(path).then((res)=>{
@@ -85,7 +85,7 @@ export default function EvaluateTopic()  {
             Evaluation,
         }
 
-        axios.post("https://research-management-tool-ym.herokuapp.com/evaluatedTopic/",newTopic).then(()=>{
+        axios.post("http://localhost:8070/evaluatedTopic/",newTopic).then(()=>{
 
             Store.addNotification({
                 title: "Evaluation Sent Successfully.",

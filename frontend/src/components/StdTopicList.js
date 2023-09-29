@@ -13,7 +13,7 @@ export default function TopicList() {
 
   useEffect(() => {
     axios
-      .get("https://research-management-tool-ym.herokuapp.com/topic")
+      .get("http://localhost:8070/topic")
       .then((res) => {
         setRequest(res.data.topicRouter);
       })
