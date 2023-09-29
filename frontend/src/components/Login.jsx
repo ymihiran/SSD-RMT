@@ -34,7 +34,7 @@ function Login() {
       } else if (error.response.status === 400) {
         alert("Email or Password Incorrect");
       } else {
-        alert("Authentication Failed");
+        alert("Authentication Failed "+ error.response.status );
       }
     }
   }
