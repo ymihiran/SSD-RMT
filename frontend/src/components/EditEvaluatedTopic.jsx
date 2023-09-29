@@ -145,7 +145,7 @@ export default function EvaluateTopic()  {
                     console.log("Mail Sent");
                     },
                     (error) => {
-                    console.log(error.text);
+                    console.log("Oops... Something went wrong. Email was not sent");
                     }
                 );
     }

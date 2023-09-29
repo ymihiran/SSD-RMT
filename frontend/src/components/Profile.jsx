@@ -45,7 +45,7 @@ export default function Profile() {
           setUser(JSON.parse(localStorage.getItem("user")));
         })
         .catch((error) => {
-          console.log(error);
+          console.log("Oops! Error occured while fetching data.");
         });
     }
     getUser();

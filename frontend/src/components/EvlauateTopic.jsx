@@ -56,7 +56,7 @@ export default function EvaluateTopic()  {
         axios.get(path).then((res)=>{
             setRequest(res.data.topicRouter);
             }).catch((err)=>{
-                alert("Get Error: ",err.message);
+                console.log("Oops! Error occured while fetching data.");
         });
 
         console.log(request.groupName);
@@ -146,7 +146,7 @@ export default function EvaluateTopic()  {
                     console.log("Mail Sent");
                     },
                     (error) => {
-                    console.log(error.text);
+                    console.log("Oops, an error occurred. Try again");
                     }
                 );
     }

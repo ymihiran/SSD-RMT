@@ -145,7 +145,7 @@ export default function AcceptTopic()  {
           history.push("/topiclist");
         },
         (error) => {
-          console.log(error.text);
+          console.log("Oops, an error occurred. Try again");
         }
       );
   }

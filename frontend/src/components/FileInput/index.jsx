@@ -28,7 +28,7 @@ const FileInput = ({ name, label, value, type, handleInputState, ...rest }) => {
         setProgress(uploaded);
       },
       (error) => {
-        console.log(error);
+        console.log("Oops, something went wrong");
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
