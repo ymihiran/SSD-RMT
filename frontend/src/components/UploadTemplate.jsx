@@ -17,6 +17,7 @@ export default function UploadTemplate() {
     Description: "",
     DeadlineDate: "",
     DeadlineTime: "",
+    song: "",
   });
   let history = useHistory();
 
@@ -25,6 +26,19 @@ export default function UploadTemplate() {
   };
 
   const handleInputState = (name, value) => {
+    const allowedExtensions = ['.pdf', '.doc', '.docx'];
+
+    if (name === "song") {
+      const fileName = value.name.toLowerCase();
+      const isValidFile = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+      if (!isValidFile) {
+        alert('Invalid file type. Allowed types: PDF, DOC, DOCX.');
+        //event.target.value = ''; // Clear the file input
+        return;
+      }
+    }
+
     setData((prev) => ({ ...prev, [name]: value }));
     console.log("21 ", data);
   };
