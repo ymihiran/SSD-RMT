@@ -32,9 +32,13 @@ export default function UploadTemplate() {
       const fileName = value.name.toLowerCase();
       const isValidFile = allowedExtensions.some(ext => fileName.endsWith(ext));
 
+      console.log("File Size: ", value.size)
+
       if (!isValidFile) {
         alert('Invalid file type. Allowed types: PDF, DOC, DOCX.');
-        //event.target.value = ''; // Clear the file input
+        return;
+      } else if (value.size > 10000000) {
+        alert('File size exceeds 10MB.');
         return;
       }
     }
