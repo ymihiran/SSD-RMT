@@ -18,13 +18,13 @@ function Login() {
       },
     };
     try {
-      const { data } = await axios.post(
+      const res = await axios.post(
         "http://localhost:8070/user/login",
         { email, password },
         config
       );
-      localStorage.setItem("userAuthToken", `${data.token}`);
-      localStorage.setItem("user", JSON.stringify(data.result));
+      //localStorage.setItem("userAuthToken", `${data.token}`);
+      //localStorage.setItem("user", JSON.stringify(data.result));
       localStorage.setItem("firstLogin", true);
 
       history.push("/");
@@ -44,7 +44,7 @@ function Login() {
       <div style={{ backgroundColor: "#0F0934" }}>
         <div>
           <img
-            className="img-side"
+            className="img-side" alt='logo'
             src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"
           ></img>
         </div>

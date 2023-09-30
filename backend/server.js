@@ -7,7 +7,12 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
+//Use CSRF Protection
+import csrf from "csurf";
+
+
 const app = express();
+
 
 //server run in this port 8070
 const PORT = process.env.PORT || 8070;
@@ -25,11 +30,12 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-
+//CSRF Middleware
+var csrfProtect = csrf({ cookie: true })
 
 // Document/ presentation Evaluate Route
 import evaluationRouter from "./routes/EvaluationRoute.js";
-app.use("/evaluation", evaluationRouter);
+app.use("/evaluation", csrfProtect, evaluationRouter);
 
 // Supervisor/Co supervisor Route
 import supervisorRouter from "./routes/SupervisorRoute.js";
@@ -42,11 +48,11 @@ app.use("/topic", topicRouter);
 // Marking Schema Route
 import markingRouter from "./routes/markingschemes.js";
 
-app.use("/markingScheme",markingRouter);
+app.use("/markingScheme", markingRouter);
 
 // Evaluated Topics Route
 import evaluatedTopicRouter from "./routes/evaluatedtopics.js";
-app.use("/evaluatedTopic",evaluatedTopicRouter);
+app.use("/evaluatedTopic", evaluatedTopicRouter);
 
 
 //User Routes
