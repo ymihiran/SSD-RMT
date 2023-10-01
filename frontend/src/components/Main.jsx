@@ -19,28 +19,27 @@ import {
   MDBRow,
   MDBCol,
 } from "mdb-react-ui-kit";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-
-
-
+import { useSelector } from "react-redux";
 
 import Featured from "./Featured";
 
 export default function Main() {
-  const [userdata, setUserdata] = useState([]);
+  const auth = useSelector((state) => state.auth);
+
+  const { user } = auth;
+  //const [userdata, setUserdata] = useState([]);
   let history = useHistory();
 
-  useEffect(() => {
-    setUserdata(JSON.parse(localStorage.getItem("user") || "[]"));
-    console.log("USer Role", userdata.user_role);
-  }, []);
+  // useEffect(() => {
+  //   // setUserdata(JSON.parse(localStorage.getItem("user") || "[]"));
+  //   // console.log("USer Role", userdata.user_role);
+  // }, []);
 
-  if (JSON.parse(localStorage.getItem("user") || "[]").user_role == null) {
+  if (user.user_role == null) {
     history.push("/login");
-  } else if (
-    JSON.parse(localStorage.getItem("user") || "[]").user_role == "Student"
-  ) {
+  } else if (user.user_role === "Student") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -336,9 +335,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (
-    JSON.parse(localStorage.getItem("user") || "[]").user_role == "Admin"
-  ) {
+  } else if (user.user_role === "Admin") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -634,10 +631,8 @@ export default function Main() {
       </div>
     );
   } else if (
-    JSON.parse(localStorage.getItem("user") || "[]").user_role ==
-      "Supervisor" ||
-    JSON.parse(localStorage.getItem("user") || "[]").user_role ==
-      "Co-Supervisor"
+    user.user_role === "Supervisor" ||
+    user.user_role === "Co-Supervisor"
   ) {
     return (
       <div className="main-m-container">
@@ -927,9 +922,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (
-    JSON.parse(localStorage.getItem("user") || "[]").user_role == "Admin"
-  ) {
+  } else if (user.user_role === "Admin") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -1229,9 +1222,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (
-    JSON.parse(localStorage.getItem("user") || "[]").user_role == "Panel Member"
-  ) {
+  } else if (user.user_role === "Panel Member") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>

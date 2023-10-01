@@ -3,7 +3,7 @@ import "./CSS/btrap.css";
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-//import { showErrMsg, showSuccessMsg } from "./utils/notification/Notification";
+import { showErrMsg, showSuccessMsg } from "./utils/notification/Notification";
 import { dispatchLogin } from "../redux/actions/authAction";
 import { useDispatch } from "react-redux";
 
@@ -11,65 +11,42 @@ function Login() {
   const initialState = {
     email: "",
     password: "",
+    err: "",
+    success: "",
   };
 
   const [user, setUser] = useState(initialState);
-  const history = useHistory();
+
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const { email, password } = user;
+  const { email, password, err, success } = user;
 
-  const handleChangeInput = (event) => {
-    const { name, value } = event.target;
-    setUser({ ...user, [name]: value });
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value, err: "", success: "" });
   };
 
-  async function signIn(event) {
-    event.preventDefault();
-
-    const config = {
-      headers: {
-        "const-Type": "application/json",
-      },
-    };
-    // try {
-    //   const res = await axios.post(
-    //     "http://localhost:8070/user/login",
-    //     { email, password },
-    //     config
-    //   );
-    //   //localStorage.setItem("userAuthToken", `${data.token}`);
-    //   //localStorage.setItem("user", JSON.stringify(data.result));
-    //   localStorage.setItem("firstLogin", true);
-
-    //   history.push("/");
-    // } catch (error) {
-    //   if (error.response.status === 404) {
-    //     alert("Invalid Registration Number");
-    //   } else if (error.response.status === 400) {
-    //     alert("Email or Password Incorrect");
-    //   } else {
-    //     alert("Authentication Failed "+ error.response.status );
-    //   }
-    // }
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post(
-        "http://localhost:8070/user/login",
-        { email, password },
-        config
-      );
+      const res = await axios.post("http://localhost:8070/user/login", {
+        email,
+        password,
+      });
 
-      setUser({ ...user });
+      setUser({ ...user, err: "", success: res.data.msg });
 
       localStorage.setItem("firstLogin", true);
 
       dispatch(dispatchLogin());
-      history.push("/");
+
+      history.push(`/register`);
     } catch (err) {
-      setUser({ ...user });
+      err.response.data.msg &&
+        setUser({ ...user, err: err.response.data.msg, success: "" });
     }
-  }
+  };
 
   return (
     <div className="topic-container">
@@ -115,7 +92,10 @@ function Login() {
           <h3 style={{ fontWeight: "bold" }}>Welcome Again!</h3>{" "}
         </center>
         <div className="reg-from-container">
-          <form onSubmit={signIn}>
+          {err && showErrMsg(err)}
+          {success && showSuccessMsg(success)}
+          <br></br> <br></br>
+          <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label
                 className="t-form-label"
@@ -130,6 +110,7 @@ function Login() {
                 name="email"
                 id="email"
                 placeholder="Email"
+                value={email}
                 onChange={handleChangeInput}
                 required
               />
@@ -148,6 +129,7 @@ function Login() {
                 type="password"
                 name="password"
                 id="password"
+                value={password}
                 placeholder="Password"
                 onChange={handleChangeInput}
                 required

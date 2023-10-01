@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 //Use CSRF Protection
-import csrf from "csurf";
+//import csrf from "csurf";
 
 const app = express();
 
@@ -17,11 +17,7 @@ const app = express();
 //app.use(helmet());
 
 
-app.use(cors(
-  // {
-  //   origin: process.env.FRONTEND_URL
-  // }
-));
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());
@@ -61,7 +57,7 @@ app.use(bodyParser.json());
 // });
 
 
-//*** Define Rutes Here ***/
+//*** Define Routes Here ***/
 
 // Document/ presentation Evaluate Route
 import evaluationRouter from "./routes/EvaluationRoute.js";

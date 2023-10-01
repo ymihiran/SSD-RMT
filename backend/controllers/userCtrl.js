@@ -55,11 +55,15 @@ const userCtrl = {
 
             //Create refresh token and set it to the cookies
             const refreshtoken = createRefreshToken({ id: user._id })
+
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,  //Turn on the HTTP only cookies to prevent from XSS
-                path: '/user/refresh_token',
+                path: 'http://localhost:8070/user/refresh_token',
+                sameSite: 'none', // Apply same-site cookie attribute for added security
                 maxAge: 60 * 60 * 1000               // Set to 1 hour
             });
+
+
 
             // Set the CSRF token in a separate cookie
             // res.cookie('XSRF-TOKEN', req.csrfToken(), {
@@ -176,18 +180,29 @@ const userCtrl = {
     //Add Function To Get Access Token based on previously issued refresh token for improved security
     getAccessToken: (req, res) => {
         try {
+
             const rf_token = req.cookies.refreshtoken;
-            if (!rf_token)
+            console.log(req.cookies);
+            console.log("Token" + rf_token);
+            if (!rf_token) {
                 return res.status(400).json({ msg: "Please login now 1!" });
+            }
 
-            jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-                if (err) return res.status(400).json({ msg: "Please login now 2!" });
+            else {
+                jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+                    if (err) {
+                        console.log("User" + user);
+                        return res.status(400).json({ msg: "Please login now 2!" });
 
-                //Create Access Token and Sign it
-                const access_token = createAccessToken({ id: user.id });
-                res.json({ access_token });
-            });
+                    }
+
+                    //Create Access Token and Sign it
+                    const access_token = createAccessToken({ id: user.id });
+                    res.json({ access_token });
+                });
+            }
         } catch (err) {
+            console.log(err);
             return res.status(500).json({ msg: err.message });
         }
     },
