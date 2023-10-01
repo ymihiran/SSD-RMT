@@ -6,13 +6,16 @@ import userCtrl from '../controllers/userCtrl.js';
 import auth from '../middleware/auth.js';
 
 
-router.post('/refresh_token', userCtrl.getAccessToken)
 
 router.post('/register', userCtrl.register)
 
 router.post('/login', userCtrl.login)
 
-router.get('/infor/:id', auth, userCtrl.getUserInfor)
+router.post('/refresh_token', userCtrl.getAccessToken)
+
+router.get('/infor', auth, userCtrl.getUserInfor)
+
+router.get('/infor/:id', auth, userCtrl.getUserInforParam)
 
 router.get('/allprof', auth, userCtrl.allusers)
 

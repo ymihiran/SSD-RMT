@@ -3,11 +3,26 @@ import "./CSS/btrap.css";
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+//import { showErrMsg, showSuccessMsg } from "./utils/notification/Notification";
+import { dispatchLogin } from "../redux/actions/authAction";
+import { useDispatch } from "react-redux";
 
 function Login() {
-  const [email, setemail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialState = {
+    email: "",
+    password: "",
+  };
+
+  const [user, setUser] = useState(initialState);
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const { email, password } = user;
+
+  const handleChangeInput = (event) => {
+    const { name, value } = event.target;
+    setUser({ ...user, [name]: value });
+  };
 
   async function signIn(event) {
     event.preventDefault();
@@ -17,25 +32,42 @@ function Login() {
         "const-Type": "application/json",
       },
     };
+    // try {
+    //   const res = await axios.post(
+    //     "http://localhost:8070/user/login",
+    //     { email, password },
+    //     config
+    //   );
+    //   //localStorage.setItem("userAuthToken", `${data.token}`);
+    //   //localStorage.setItem("user", JSON.stringify(data.result));
+    //   localStorage.setItem("firstLogin", true);
+
+    //   history.push("/");
+    // } catch (error) {
+    //   if (error.response.status === 404) {
+    //     alert("Invalid Registration Number");
+    //   } else if (error.response.status === 400) {
+    //     alert("Email or Password Incorrect");
+    //   } else {
+    //     alert("Authentication Failed "+ error.response.status );
+    //   }
+    // }
+
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:8070/user/login",
         { email, password },
         config
       );
-      //localStorage.setItem("userAuthToken", `${data.token}`);
-      //localStorage.setItem("user", JSON.stringify(data.result));
+
+      setUser({ ...user });
+
       localStorage.setItem("firstLogin", true);
 
+      dispatch(dispatchLogin());
       history.push("/");
-    } catch (error) {
-      if (error.response.status === 404) {
-        alert("Invalid Registration Number");
-      } else if (error.response.status === 400) {
-        alert("Email or Password Incorrect");
-      } else {
-        alert("Authentication Failed "+ error.response.status );
-      }
+    } catch (err) {
+      setUser({ ...user });
     }
   }
 
@@ -44,7 +76,8 @@ function Login() {
       <div style={{ backgroundColor: "#0F0934" }}>
         <div>
           <img
-            className="img-side" alt='logo'
+            className="img-side"
+            alt="logo"
             src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"
           ></img>
         </div>
@@ -97,9 +130,7 @@ function Login() {
                 name="email"
                 id="email"
                 placeholder="Email"
-                onChange={(event) => {
-                  setemail(event.target.value);
-                }}
+                onChange={handleChangeInput}
                 required
               />
             </div>
@@ -118,9 +149,7 @@ function Login() {
                 name="password"
                 id="password"
                 placeholder="Password"
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                }}
+                onChange={handleChangeInput}
                 required
               />
             </div>

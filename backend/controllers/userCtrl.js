@@ -32,11 +32,11 @@ const userCtrl = {
                 research_area, reg_number
             })
 
-            const token = jwt.sign({ id: newUser._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" })
+            // const token = jwt.sign({ id: newUser._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" })
 
             await newUser.save();
 
-            res.json({ result: newUser, token, msg: "Registration Successfull.Please login to continue!" })
+            res.json({ msg: "Registration Successfull.Please login to continue!" })
 
         } catch (err) {
 
@@ -47,30 +47,26 @@ const userCtrl = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body
-            const user = await Users.findOne({ email })
-            if (!user) return res.status(400).json({ msg: "This email does not exist." })
+            const user = await Users.findOne({ email });
+            if (!user) return res.status(400).json({ msg: "This email does not exist." });
 
-            const isMatch = await bcrypt.compare(password, user.password)
-            if (!isMatch) return res.status(400).json({ msg: "Password is incorrect." })
-
-            /*** Refresh TOken Generation Process was changed ***/
-            //const token = jwt.sign({id:user._id}, process.env.REFRESH_TOKEN_SECRET,{expiresIn:"1h"} )
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) return res.status(400).json({ msg: "Password is incorrect." });
 
             //Create refresh token and set it to the cookies
-            const refresh_token = createRefreshToken({ id: user._id })
-            res.cookie('refreshtoken', refresh_token, {
+            const refreshtoken = createRefreshToken({ id: user._id })
+            res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,  //Turn on the HTTP only cookies to prevent from XSS
-                sameSite: 'strict',
                 path: '/user/refresh_token',
                 maxAge: 60 * 60 * 1000               // Set to 1 hour
-            })
+            });
 
             // Set the CSRF token in a separate cookie
-            res.cookie('XSRF-TOKEN', req.csrfToken(), {
-                httpOnly: true,
-                path: '/user/refresh_token',
-                maxAge: 60 * 60 * 1000, // Set to 1 hour
-            });
+            // res.cookie('XSRF-TOKEN', req.csrfToken(), {
+            //     httpOnly: true,
+            //     path: '/user/refresh_token',
+            //     maxAge: 60 * 60 * 1000, // Set to 1 hour
+            // });
 
 
             res.status(200).json({ msg: "Login success!" })
@@ -98,6 +94,15 @@ const userCtrl = {
     },
 
     getUserInfor: async (req, res) => {
+        try {
+            const user = await Users.findById(req.user.id).select('-password')
+            res.json(user)
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+
+    getUserInforParam: async (req, res) => {
         let userId = req.params.id;
         try {
             const user = await Users.findById(userId).select('-password')
@@ -171,20 +176,21 @@ const userCtrl = {
     //Add Function To Get Access Token based on previously issued refresh token for improved security
     getAccessToken: (req, res) => {
         try {
-            const rf_token = req.cookies.refreshtoken
-            if (!rf_token) return res.status(400).json({ msg: "Please login now!" })
+            const rf_token = req.cookies.refreshtoken;
+            if (!rf_token)
+                return res.status(400).json({ msg: "Please login now 1!" });
 
             jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-                if (err) return res.status(400).json({ msg: "Please login now!" })
+                if (err) return res.status(400).json({ msg: "Please login now 2!" });
 
                 //Create Access Token and Sign it
-                const access_token = createAccessToken({ id: user.id })
-                res.json({ access_token })
-            })
+                const access_token = createAccessToken({ id: user.id });
+                res.json({ access_token });
+            });
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({ msg: err.message });
         }
-    }
+    },
 
 }
 
@@ -196,11 +202,15 @@ function validateEmail(email) {
 
 //Create access token and refresh tokens and sign them
 const createAccessToken = (payload) => {
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
-}
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+    });
+};
 
 const createRefreshToken = (payload) => {
-    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1h' })
-}
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: "1h",
+    });
+};
 
 export default userCtrl;

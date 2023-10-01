@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "/node_modules/bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
-import  NotFound  from "./components/utils/NotFound/NotFound";
+import NotFound from "./components/utils/NotFound/NotFound";
 import UploadTemplate from "./components/UploadTemplate";
 
 import SubmitTopic from "./components/SubmitTopic";
@@ -49,50 +49,54 @@ import PanelMembers from "./components/CheckPanelMembers";
 import SelectPanelMembers from "./components/SelectPanelMembers";
 import Header from "./components/Header";
 
-function App() {
-  const [token, setToken] = useState(false);
-  const [isLogged, setIsLogged] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [issupervisor, setIsSupervisor] = useState(false);
-  const [ispanelmember, setIsPanelMember] = useState(false);
-  const [iscosupervisor, setIsCoSupervisor] = useState(false);
+//ADD REDUX FOR STATE MANAGEMENT
+import { useDispatch, useSelector } from "react-redux";
+import {
+  dispatchLogin,
+  fetchUser,
+  dispatchGetUser,
+} from "./redux/actions/authAction";
 
-  const refreshToken = async () => {
-    const res = localStorage.getItem("userAuthToken");
-    setToken(res);
-  };
+
+
+function App() {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { isLogged, isAdmin } = auth;
+
   useEffect(() => {
     const firstLogin = localStorage.getItem("firstLogin");
-    if (firstLogin) refreshToken();
-
-    if (token) {
-      const getUser = async () => {
-        try {
-          const res = JSON.parse(localStorage.getItem("user")).user_role;
-
-          setIsLogged(true);
-          res == "Admin" ? setIsAdmin(true) : setIsAdmin(false);
-          res == "Panel Member"
-            ? setIsPanelMember(true)
-            : setIsPanelMember(false);
-          res == "Supervisor" ? setIsSupervisor(true) : setIsSupervisor(false);
-          res == "Co-Supervisor"
-            ? setIsCoSupervisor(true)
-            : setIsCoSupervisor(false);
-        } catch (err) {
-          alert(err.response.data.msg);
-        }
+    if (firstLogin) {
+      const getToken = async () => {
+        const res = await axios.post("http://localhost:8070/user/refresh_token", null);
+        dispatch({ type: "GET_TOKEN", payload: res.data.access_token });
       };
+      getToken();
+    }
+  }, [auth.isLogged, dispatch]);
 
+  useEffect(() => {
+    if (token) {
+      const getUser = () => {
+        dispatch(dispatchLogin());
+
+        return fetchUser(token).then((res) => {
+          dispatch(dispatchGetUser(res));
+        });
+      };
       getUser();
     }
-  }, [token]);
+  }, [token, dispatch]);
 
   return (
     <div>
-      <Header />
-      <ReactNotifications />
+
+
       <Router>
+        <ReactNotifications />
+        <Header />
+        {/* <Routes> */}
         <Route path="/" exact component={Main} />
 
         <Route
@@ -153,6 +157,7 @@ function App() {
         <Route path="/chatGroup" exact component={chatGroupSupervisor} />
 
         <Route path="/AllSubmitDoc" component={AllSubmitDoc} />
+        {/* </Routes> */}
       </Router>
     </div>
   );

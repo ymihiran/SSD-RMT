@@ -15,7 +15,6 @@
     "cloudinary": "^1.30.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "csrf-csrf": "^3.0.1",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
