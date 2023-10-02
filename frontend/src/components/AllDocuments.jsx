@@ -2,21 +2,24 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import "./Styles/styles.css";
 import { useHistory } from "react-router";
+import { useSelector } from "react-redux";
+
 import { Store } from "react-notifications-component";
 
 export default function AllDocuments() {
+  const auth = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.token);
+  const { user } = auth;
+
   const [docList, setDocList] = useState([]);
   const history = useHistory();
 
   //User authentication
   function authenticate() {
     if (
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Supervisor" &&
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Co-Supervisor" &&
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Panel Member"
+      user.user_role !== "Supervisor" &&
+      user.user_role !== "Co-Supervisor" &&
+      user.user_role === "Panel Member"
     ) {
       history.push("/login");
       Store.addNotification({
@@ -70,7 +73,7 @@ export default function AllDocuments() {
       history.push("/EvaluateTopic");
     } else {
       history.push("/Doc");
-    };
+    }
   };
 
   return (

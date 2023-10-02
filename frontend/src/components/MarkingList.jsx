@@ -4,8 +4,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router";
 import { Store } from "react-notifications-component";
+import { useSelector } from "react-redux";
 
 export default function MarkingList() {
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   const [request, setRequest] = useState([]);
 
   const [spec, setSpec] = useState("");
@@ -14,32 +18,32 @@ export default function MarkingList() {
   let history = useHistory();
 
   function authenticate() {
+    if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
+      history.push("/login");
+      Store.addNotification({
+        title: "You are not allowed!",
+        message:
+          "You are not allowed to access this page! Please login as Admin",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        type: "danger",
+        insert: "top",
+        container: "top-right",
 
-    if((JSON.parse(localStorage.getItem('user')|| "[]")).user_role!="Admin"){
-        history.push("/login");
-        Store.addNotification({
-            title: "You are not allowed!",
-            message: "You are not allowed to access this page! Please login as Admin",
-            animationIn: ["animate__animated", "animate__fadeIn"],
-            animationOut: ["animate__animated", "animate__fadeOut"],
-            type: "danger",
-            insert: "top",
-            container: "top-right",
-            
-            dismiss: {
-              duration: 2500,
-              onScreen: true,
-              showIcon: true
-            },
+        dismiss: {
+          duration: 2500,
+          onScreen: true,
+          showIcon: true,
+        },
 
-            width:400
-        });    
+        width: 400,
+      });
     }
-}
+  }
 
-setTimeout(() => {
+  setTimeout(() => {
     authenticate();
-}, 0);
+  }, 0);
 
   useEffect(() => {
     axios

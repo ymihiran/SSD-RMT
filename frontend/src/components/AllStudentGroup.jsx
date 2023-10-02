@@ -5,15 +5,19 @@ import "./CSS/stgrup.css";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import { useHistory } from "react-router-dom";
 import { Store } from "react-notifications-component";
+import { useSelector } from "react-redux";
 
 export default function AllStudentGroup() {
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   const [group, setGroups] = useState([]);
   const history = useHistory();
 
   //user authenticate
 
   function authenticate() {
-    if (JSON.parse(localStorage.getItem("user") || "[]").user_role != "Admin") {
+    if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",

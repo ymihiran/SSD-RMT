@@ -173,7 +173,6 @@ const userCtrl = {
 
             //clear cookie storage
             res.clearCookie('refreshtoken');
-            console.log("Cookie cleared!");
 
             return res.json({ msg: "Logged out." })
         } catch (err) {

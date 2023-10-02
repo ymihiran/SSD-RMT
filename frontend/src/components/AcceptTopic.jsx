@@ -26,8 +26,8 @@ export default function AcceptTopic() {
 
   let history = useHistory();
 
-  function authenticate() {
-    if (user.user_role !== "Supervisor" && user.user_role !== "Co-Supervisor") {
+  async function authenticate() {
+    if (user.user_role !== "Supervisor" && user.user_role === "Co-Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",

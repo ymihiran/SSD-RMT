@@ -7,8 +7,12 @@ import { useHistory } from "react-router-dom";
 import { Store } from "react-notifications-component";
 import { Modal, ModalHeader, ModalBody } from "reactstrap";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useSelector } from "react-redux";
 
 export default function ChatGroupSupervisor() {
+  const auth = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.token);
+  const { user } = auth;
   const [allMsg, setAllMsg] = useState();
   const [replyMsg, setReplyMsg] = useState();
   const history = useHistory();
@@ -19,12 +23,7 @@ export default function ChatGroupSupervisor() {
 
   //User authentication
   function authenticate() {
-    if (
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Supervisor" &&
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Co-Supervisor"
-    ) {
+    if (user.user_role !== "Supervisor" && user.user_role === "Co-Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",
@@ -136,10 +135,13 @@ export default function ChatGroupSupervisor() {
   return (
     <div className="allDoc_body_container">
       {/*left side column */}
-        
+
       <div className="left_container">
         <div>
-          <img className="img-side" src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"></img>
+          <img
+            className="img-side"
+            src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"
+          ></img>
         </div>
       </div>
 

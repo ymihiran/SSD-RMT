@@ -24,7 +24,7 @@ export default function AddMarking() {
   const [extra, setExtra] = useState(null);
 
   function authenticate() {
-    if (user.user_role !== "Admin") {
+    if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",
