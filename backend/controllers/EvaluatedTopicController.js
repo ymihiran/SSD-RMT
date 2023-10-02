@@ -1,4 +1,5 @@
 import TopicReg from "../models/EvaluatedTopic.js";
+import sanitize from 'mongo-sanitize';
 
 export const addEvaluatedTopic = async (req, res) => {
   const tid = req.body.tid;
@@ -46,7 +47,7 @@ export const getAllEvaluatedTopic = async (req, res) => {
 };
 
 export const getSingleEvaluatedTopic = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
 
   await TopicReg.find({ _id: topicid }).exec((err, Topic) => {
     if (err) {
@@ -62,7 +63,7 @@ export const getSingleEvaluatedTopic = async (req, res) => {
 };
 
 export const updateSingleEvaluatedRecord = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
   const {
     tid,
     groupID,
@@ -96,7 +97,7 @@ export const updateSingleEvaluatedRecord = async (req, res) => {
 };
 
 export const deleteEvaluatedTopic = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
   await TopicReg.findByIdAndDelete(topicid)
     .then(() => {
       res.status(200).send({ status: "Deleted!" });

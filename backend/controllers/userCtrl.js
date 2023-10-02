@@ -1,6 +1,7 @@
 import Users from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import sanitize from 'mongo-sanitize';
 
 const userCtrl = {
 
@@ -81,7 +82,7 @@ const userCtrl = {
     },
 
     resetPassword: async (req, res) => {
-        //let userId = req.params.id;
+
         try {
             const { password } = req.body
 
@@ -107,7 +108,7 @@ const userCtrl = {
     },
 
     getUserInforParam: async (req, res) => {
-        let userId = req.params.id;
+        let userId = sanitize(req.params.id);
         try {
             const user = await Users.findById(userId).select('-password')
             res.json(user)
@@ -117,7 +118,7 @@ const userCtrl = {
     },
 
     deleteUser: async (req, res) => {
-        //let userId = req.params.id;
+
         try {
             await Users.findByIdAndDelete(req.user.id)
             res.json({ msg: "Profile Deleted!" })
@@ -127,7 +128,6 @@ const userCtrl = {
     },
 
     updateUser: async (req, res) => {
-        //let userId = req.params.id;
         const { name, email, avatar, mobile, user_role, research_area, reg_number } = req.body
         const update = { name, email, avatar, mobile, user_role, research_area, reg_number }
         try {
@@ -154,7 +154,7 @@ const userCtrl = {
     },
 
     panelMembers: async (req, res) => {
-        let r_area = req.params.id;
+        let r_area = sanitize(req.params.id);
         Users.find({ research_area: r_area, user_role: "Panel Member" }).exec((err, Users) => {
             if (err) {
                 return res.status(400).json({

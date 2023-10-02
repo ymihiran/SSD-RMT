@@ -2,6 +2,7 @@ import request from "../models/Request.js";
 import nodemailer from "nodemailer";
 import hbs from "nodemailer-express-handlebars";
 import path from "path";
+import sanitize from 'mongo-sanitize';
 
 //initialize nodemailer
 var transporter = nodemailer.createTransport({
@@ -67,7 +68,7 @@ export const sendReq = async (req, res) => {
 
 //get one groupe request details
 export const findGroup = async (req, res) => {
-  const groupID = req.params.groupID;
+  const groupID = sanitize(req.params.groupID);
 
   request
     .findOne({ groupID: groupID })
