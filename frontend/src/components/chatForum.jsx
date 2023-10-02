@@ -3,8 +3,12 @@ import axios from "axios";
 import { Card, Button } from "react-bootstrap";
 import { Store } from "react-notifications-component";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useSelector } from "react-redux";
 
 export default function ChatForum() {
+  const auth = useSelector((state) => state.auth);
+
+  const { user } = auth;
   // const [groupID, setGroupID] = useState();
   const [stdName, setStdName] = useState();
   const [subject, setSubject] = useState();
@@ -17,16 +21,12 @@ export default function ChatForum() {
   let groupID;
 
   useEffect(() => {
-    setStdEmail(JSON.parse(localStorage.getItem("user")).email);
-    setStdName(JSON.parse(localStorage.getItem("user")).name);
+    setStdEmail(user.email);
+    setStdName(user.name);
 
     //get group _id and leader's email by student email
     const emailID = axios
-      .get(
-        `http://localhost:8070/stdGroup/${
-          JSON.parse(localStorage.getItem("user")).email
-        }`
-      )
+      .get(`http://localhost:8070/stdGroup/${user.email}`)
       .then((res) => {
         setGroup_id(res.data._id);
 

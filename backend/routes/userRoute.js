@@ -23,7 +23,7 @@ router.get('/panel/:id', auth, userCtrl.panelMembers)
 
 router.post('/reset', auth, userCtrl.resetPassword)
 
-router.delete('/delete/:id', auth, userCtrl.deleteUser)
+router.delete('/delete', auth, userCtrl.deleteUser)
 
 router.patch('/update', auth, userCtrl.updateUser)
 

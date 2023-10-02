@@ -26,17 +26,7 @@ export default function Profile() {
   const { user } = auth;
   const [users, setUser] = useState(user);
   const [data, setData] = useState(initialState);
-  const {
-    name,
-    email,
-    mobile,
-    user_role,
-    reg_number,
-    password,
-    cf_password,
-    err,
-    success,
-  } = data;
+  const { name, email, mobile, password, cf_password, err, success } = data;
   const [avatar, setAvatar] = useState(false);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
@@ -49,7 +39,7 @@ export default function Profile() {
         })
         .then((res) => {
           setUser(res.data);
-          setData({ ...data, name: res.data.name, email: res.data.email });
+          setData({ ...data });
         })
         .catch((error) => {
           console.log("Oops! Error occured while fetching data.");
@@ -109,6 +99,7 @@ export default function Profile() {
 
   async function updateInfor() {
     try {
+      console.log(name);
       axios.patch(
         `http://localhost:8070/user/update`,
         {

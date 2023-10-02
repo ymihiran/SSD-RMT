@@ -14,11 +14,11 @@ const app = express();
 
 
 // Enable security headers using helmet middleware
-//app.use(helmet());
+app.use(helmet());
 
 
 app.use(cors({
-  origin: 'http://localhost:3000', 
+  origin: 'http://localhost:3000',
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
 app.use(cookieParser());

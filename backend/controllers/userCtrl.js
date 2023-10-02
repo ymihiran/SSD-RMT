@@ -61,7 +61,6 @@ const userCtrl = {
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
                 path: '/',
-                // sameSite: 'none',
                 maxAge: 60 * 60 * 1000
             });
 
@@ -83,13 +82,13 @@ const userCtrl = {
     },
 
     resetPassword: async (req, res) => {
-        let userId = sanitize(req.params.id);
+
         try {
             const { password } = req.body
 
             const passwordHash = await bcrypt.hash(password, 12)
 
-            await Users.findOneAndUpdate(userId, {
+            await Users.findOneAndUpdate(req.user.id, {
                 password: passwordHash
             })
 
@@ -119,9 +118,9 @@ const userCtrl = {
     },
 
     deleteUser: async (req, res) => {
-        let userId = sanitize(req.params.id);
+
         try {
-            await Users.findByIdAndDelete(userId)
+            await Users.findByIdAndDelete(req.user.id)
             res.json({ msg: "Profile Deleted!" })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -129,11 +128,10 @@ const userCtrl = {
     },
 
     updateUser: async (req, res) => {
-        let userId = sanitize(req.params.id);
         const { name, email, avatar, mobile, user_role, research_area, reg_number } = req.body
         const update = { name, email, avatar, mobile, user_role, research_area, reg_number }
         try {
-            await Users.findByIdAndUpdate(userId, update)
+            await Users.findByIdAndUpdate(req.user.id, update)
             res.json({ msg: "Update Success!" })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -172,7 +170,10 @@ const userCtrl = {
 
     logout: async (req, res) => {
         try {
-            res.clearCookie('refreshtoken', { path: '/user/refresh_token' })
+
+            //clear cookie storage
+            res.clearCookie('refreshtoken');
+
             return res.json({ msg: "Logged out." })
         } catch (err) {
             return res.status(500).json({ msg: err.message })

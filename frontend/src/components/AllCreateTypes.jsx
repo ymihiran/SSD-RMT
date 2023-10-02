@@ -5,15 +5,19 @@ import "./CSS/stgrup.css";
 import { Button } from "react-bootstrap";
 import { Store } from "react-notifications-component";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function AllCreateTypes() {
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   const [type, setTypes] = useState([]);
   const history = useHistory();
 
   //user authenticate
 
   function authenticate() {
-    if (JSON.parse(localStorage.getItem("user") || "[]").user_role != "Admin") {
+    if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",

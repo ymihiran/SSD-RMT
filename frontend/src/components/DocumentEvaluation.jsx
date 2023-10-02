@@ -3,8 +3,12 @@ import React, { useEffect, useState } from "react";
 import "./Styles/styles.css";
 import { useHistory } from "react-router-dom";
 import { Store } from "react-notifications-component";
+import { useSelector } from "react-redux";
 
 export default function DocumentEvaluation() {
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   const [groupID, setGroupID] = useState();
   const [researchTopic, setResearchTopic] = useState();
   const [link, setLink] = useState();
@@ -19,12 +23,7 @@ export default function DocumentEvaluation() {
 
   //Supervisor, co-supervisor authentication
   function DocumentAuthenticate() {
-    if (
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Supervisor" &&
-      JSON.parse(localStorage.getItem("user") || "[]").user_role !=
-        "Co-Supervisor"
-    ) {
+    if (user.user_role !== "Supervisor" && user.user_role === "Co-Supervisor") {
       history.push("/allDoc");
       Store.addNotification({
         title: "You are not allowed Documentation Evaluation!",
