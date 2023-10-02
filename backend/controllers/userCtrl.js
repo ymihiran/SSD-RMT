@@ -62,7 +62,7 @@ const userCtrl = {
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
                 path: '/',
-               // sameSite: 'none',
+                // sameSite: 'none',
                 maxAge: 60 * 60 * 1000
             });
 
@@ -198,17 +198,17 @@ const userCtrl = {
                         console.error("Token verification error:", err.message);
                         return res.status(401).json({ msg: "Invalid or expired token. Please login again." });
                     }
-                
-                    // If the token is valid, decodedToken contains the payload (user ID in your case)
+
+                    // If the token is valid, decodedToken contains the payload 
                     const userId = decodedToken.id;
-                
+
                     // Create a new access token for the user
                     const access_token = createAccessToken({ id: userId });
-                
+
                     // Send the new access token in the response
                     res.json({ access_token });
                 });
-                
+
             }
         } catch (err) {
             console.log(err);

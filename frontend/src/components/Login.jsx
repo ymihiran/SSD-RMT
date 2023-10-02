@@ -35,20 +35,14 @@ function Login() {
         password,
       });
 
-      
       setUser({ ...user, err: "", success: res.data.msg });
 
       localStorage.setItem("firstLogin", true);
 
       dispatch(dispatchLogin());
-      alert("Login Successfull");
-
-      //set cookie
+      history.push("/");
+      window.location.reload();
       document.cookie = "refreshtoken=" + res.data.refreshtoken;
-      console.log(res.data);
-
-
-      history.push(`google.com`);
     } catch (err) {
       err.response.data.msg &&
         setUser({ ...user, err: err.response.data.msg, success: "" });
