@@ -56,11 +56,13 @@ const userCtrl = {
             //Create refresh token and set it to the cookies
             const refreshtoken = createRefreshToken({ id: user._id })
 
+            console.log("Refresh Token : " + refreshtoken);
+
             res.cookie('refreshtoken', refreshtoken, {
-                httpOnly: true,  //Turn on the HTTP only cookies to prevent from XSS
-                path: 'http://localhost:8070/user/refresh_token',
-                sameSite: 'none', // Apply same-site cookie attribute for added security
-                maxAge: 60 * 60 * 1000               // Set to 1 hour
+                httpOnly: true,
+                path: '/',
+               // sameSite: 'none',
+                maxAge: 60 * 60 * 1000
             });
 
 
@@ -73,7 +75,7 @@ const userCtrl = {
             // });
 
 
-            res.status(200).json({ msg: "Login success!" })
+            res.status(200).json({ msg: "Login success!", refreshtoken });
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -189,17 +191,23 @@ const userCtrl = {
             }
 
             else {
-                jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+                jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, decodedToken) => {
                     if (err) {
-                        console.log("User" + user);
-                        return res.status(400).json({ msg: "Please login now 2!" });
-
+                        // If there's an error with the token (e.g., expired or invalid signature)
+                        console.error("Token verification error:", err.message);
+                        return res.status(401).json({ msg: "Invalid or expired token. Please login again." });
                     }
-
-                    //Create Access Token and Sign it
-                    const access_token = createAccessToken({ id: user.id });
+                
+                    // If the token is valid, decodedToken contains the payload (user ID in your case)
+                    const userId = decodedToken.id;
+                
+                    // Create a new access token for the user
+                    const access_token = createAccessToken({ id: userId });
+                
+                    // Send the new access token in the response
                     res.json({ access_token });
                 });
+                
             }
         } catch (err) {
             console.log(err);
@@ -223,6 +231,7 @@ const createAccessToken = (payload) => {
 };
 
 const createRefreshToken = (payload) => {
+    console.log("Payload : " + payload.id);
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
         expiresIn: "1h",
     });
