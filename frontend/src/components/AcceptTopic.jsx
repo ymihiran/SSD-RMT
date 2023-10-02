@@ -4,86 +4,79 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router";
 import emailjs from "emailjs-com";
+import { useSelector } from "react-redux";
 
-import { Store } from 'react-notifications-component';
+import { Store } from "react-notifications-component";
 
 //function
 
+export default function AcceptTopic() {
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
+  const [tid, settid] = useState();
+  const [id, setid] = useState();
+  const [groupID, setgroupID] = useState();
+  const [groupName, setgroupName] = useState();
+  const [rField, setrField] = useState();
+  const [rTopic, setrTopic] = useState();
+  const [leaderEmail, setleaderEmail] = useState();
+  const [comment, setacomment] = useState();
+  const [status, setstatus] = useState();
 
-export default function AcceptTopic()  {
+  let history = useHistory();
 
-    const [tid, settid] = useState();
-    const [id, setid] = useState();
-    const [groupID, setgroupID] = useState();
-    const [groupName, setgroupName] = useState();
-    const [rField, setrField] = useState();
-    const [rTopic, setrTopic] = useState();
-    const [leaderEmail, setleaderEmail] = useState();
-    const [comment, setacomment] = useState();
-    const [status, setstatus] = useState();
+  function authenticate() {
+    if (user.user_role === "Supervisor" && user.user_role === "Co-Supervisor") {
+      history.push("/login");
+      Store.addNotification({
+        title: "You are not allowed!",
+        message:
+          "You are not allowed to access this page! Please login as Supervisor or Co-Supervisor",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        type: "danger",
+        insert: "top",
+        container: "top-right",
 
-    let history = useHistory();
+        dismiss: {
+          duration: 2500,
+          onScreen: true,
+          showIcon: true,
+        },
 
-    function authenticate() {
-
-        if((JSON.parse(localStorage.getItem('user')|| "[]")).user_role!="Supervisor" && (JSON.parse(localStorage.getItem('user')|| "[]")).user_role!="Co-Supervisor"){
-            history.push("/login");
-            Store.addNotification({
-                title: "You are not allowed!",
-                message: "You are not allowed to access this page! Please login as Supervisor or Co-Supervisor",
-                animationIn: ["animate__animated", "animate__fadeIn"],
-                animationOut: ["animate__animated", "animate__fadeOut"],
-                type: "danger",
-                insert: "top",
-                container: "top-right",
-                
-                dismiss: {
-                  duration: 2500,
-                  onScreen: true,
-                  showIcon: true
-                },
-    
-                width:400
-            });    
-        }
+        width: 400,
+      });
     }
-    
-    setTimeout(() => {
-        authenticate();
-    }, 0);
+  }
 
+  setTimeout(() => {
+    authenticate();
+  }, 0);
 
-    useEffect(()=>{
+  useEffect(() => {
+    settid(localStorage.getItem("tid"));
+    setid(localStorage.getItem("ID"));
+    setgroupID(localStorage.getItem("groupID"));
+    setgroupName(localStorage.getItem("groupName"));
+    setrField(localStorage.getItem("rField"));
+    setrTopic(localStorage.getItem("rTopic"));
+    setleaderEmail(localStorage.getItem("leaderEmail"));
+    setacomment(localStorage.getItem("comment"));
+    setstatus(localStorage.getItem("status"));
+  }, []);
 
-        settid(localStorage.getItem('tid'));
-        setid(localStorage.getItem('ID'));
-        setgroupID(localStorage.getItem('groupID'));
-        setgroupName(localStorage.getItem('groupName'));
-        setrField(localStorage.getItem('rField'));
-        setrTopic(localStorage.getItem('rTopic'));
-        setleaderEmail(localStorage.getItem('leaderEmail'));
-        setacomment(localStorage.getItem('comment'));
-        setstatus(localStorage.getItem('status'));
+  async function submitData(e) {
+    e.preventDefault();
 
+    const btnName = e.nativeEvent.submitter.name;
+    let sts = "";
 
-
-    },[])
-
-    async function  submitData(e) {
-        
-        e.preventDefault();
-
-        const btnName = e.nativeEvent.submitter.name;
-        let sts="";
-
-
-    if (btnName == "Accept") {
+    if (btnName === "Accept") {
       sts = "Accepted";
-    } else if (btnName == "Reject") {
+    } else if (btnName === "Reject") {
       sts = "Rejected";
     } else {
       //no button pressed
-
     }
 
     const updateTopic = {
@@ -284,4 +277,3 @@ export default function AcceptTopic()  {
     </div>
   );
 }
-        

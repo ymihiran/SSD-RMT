@@ -22,8 +22,8 @@ const initialState = {
 export default function Profile() {
   const auth = useSelector((state) => state.auth);
 
-  const { userdata } = auth;
-  const [user, setUser] = useState(userdata);
+  const { user } = auth;
+  const [users, setUser] = useState(user);
   const [data, setData] = useState(initialState);
   const {
     name,
@@ -43,19 +43,17 @@ export default function Profile() {
   useEffect(() => {
     async function getUser() {
       await axios
-        .get(`http://localhost:8070/user/infor/${user._id}`)
+        .get(`http://localhost:8070/user/infor`)
         .then((res) => {
-          //localStorage.setItem("user", JSON.stringify(res.data));
-          //setUser(JSON.parse(localStorage.getItem("user")));
-          //set user
-          setUser(res.data);
+          localStorage.setItem("user", JSON.stringify(res.data));
+          setUser(JSON.parse(localStorage.getItem("user")));
         })
         .catch((error) => {
           console.log("Oops! Error occured while fetching data.");
         });
     }
     getUser();
-  }, [user._id, location]);
+  }, [location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -102,7 +100,7 @@ export default function Profile() {
 
   async function updateInfor() {
     try {
-      axios.patch(`http://localhost:8070/user/update/${user._id}`, {
+      axios.patch(`http://localhost:8070/user/update/${user.id}`, {
         name: name ? name : user.name,
         email: email ? email : user.email,
         avatar: avatar ? avatar : user.avatar,
@@ -129,7 +127,7 @@ export default function Profile() {
       return setData({ ...data, err: "Password did not match.", success: "" });
 
     try {
-      await axios.post(`http//:localhost:8070/user/reset/${user._id}`, {
+      await axios.post(`http//:localhost:8070/user/reset}`, {
         password,
       });
 

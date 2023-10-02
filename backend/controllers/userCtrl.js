@@ -57,7 +57,6 @@ const userCtrl = {
             //Create refresh token and set it to the cookies
             const refreshtoken = createRefreshToken({ id: user._id })
 
-            console.log("Refresh Token : " + refreshtoken);
 
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
@@ -185,8 +184,6 @@ const userCtrl = {
         try {
 
             const rf_token = req.cookies.refreshtoken;
-            console.log(req.cookies);
-            console.log("Token" + rf_token);
             if (!rf_token) {
                 return res.status(400).json({ msg: "Please login now 1!" });
             }
@@ -195,7 +192,6 @@ const userCtrl = {
                 jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, decodedToken) => {
                     if (err) {
                         // If there's an error with the token (e.g., expired or invalid signature)
-                        console.error("Token verification error:", err.message);
                         return res.status(401).json({ msg: "Invalid or expired token. Please login again." });
                     }
 
@@ -211,7 +207,6 @@ const userCtrl = {
 
             }
         } catch (err) {
-            console.log(err);
             return res.status(500).json({ msg: err.message });
         }
     },
@@ -232,7 +227,6 @@ const createAccessToken = (payload) => {
 };
 
 const createRefreshToken = (payload) => {
-    console.log("Payload : " + payload.id);
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
         expiresIn: "1h",
     });
