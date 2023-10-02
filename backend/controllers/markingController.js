@@ -1,9 +1,10 @@
 import Marking from "../models/MarkingScheme.js";
+import sanitize from 'mongo-sanitize';
 
 export const getMarkingScheme = async (req, res) => {
-  const field = req.params.field;
-  const type = req.params.schemeType;
-  console.log(req.params);
+  const field = sanitize(req.params.field);
+  const type = sanitize(req.params.schemeType);
+
   Marking.findOne({ specialization: field, schemeType: type })
     .then((data) => {
       res.json(data);
@@ -14,11 +15,11 @@ export const getMarkingScheme = async (req, res) => {
 };
 
 export const addMarking = async (req, res) => {
-  const sid = req.body.sid;
-  const specialization = req.body.specialization;
-  const schemeType = req.body.schemeType;
-  const marks = req.body.marks;
-  const criteria = req.body.criteria;
+  const sid = sanitize(req.body.sid);
+  const specialization = sanitize(req.body.specialization);
+  const schemeType = sanitize(req.body.schemeType);
+  const marks = sanitize(req.body.marks);
+  const criteria = sanitize(req.body.criteria);
 
   const newTopic = new Marking({
     sid,
@@ -53,7 +54,7 @@ export const getAllMarkings = async (req, res) => {
 };
 
 export const getSingleMarking = async (req, res) => {
-  let mid = req.params.id;
+  let mid = sanitize(req.params.id);
 
   Marking.find({ _id: mid }).exec((err, Marking) => {
     if (err) {
@@ -69,7 +70,7 @@ export const getSingleMarking = async (req, res) => {
 };
 
 export const updateMarking = async (req, res) => {
-  let mid = req.params.id;
+  let mid = sanitize(req.params.id);
   const { sid, specialization, schemeType, marks, criteria } = req.body;
 
   const updateMarking = {
@@ -91,7 +92,7 @@ export const updateMarking = async (req, res) => {
 };
 
 export const deleteMarking = async (req, res) => {
-  let mid = req.params.id;
+  let mid = sanitize(req.params.id);
   await Marking.findByIdAndDelete(mid)
     .then(() => {
       res.status(200).send({ status: "Deleted!" });
