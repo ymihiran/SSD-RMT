@@ -1,4 +1,5 @@
 import TopicReg from "../models/TopicReg.js";
+import sanitize from 'mongo-sanitize';
 
 export const addTopic = async (req, res) => {
   const tid = req.body.tid;
@@ -44,7 +45,7 @@ export const getAllTopic = async (req, res) => {
 };
 
 export const getSingleTopic = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
 
   await TopicReg.find({ _id: topicid }).exec((err, Topic) => {
     if (err) {
@@ -60,7 +61,7 @@ export const getSingleTopic = async (req, res) => {
 };
 
 export const getSingleTopicData = async (req, res) => {
-  let gid = req.params.id;
+  const gid = sanitize(req.params.id);
 
   await TopicReg.findOne({ groupID: gid }).exec((err, Topic) => {
     if (err) {
@@ -76,7 +77,7 @@ export const getSingleTopicData = async (req, res) => {
 };
 
 export const updateSingleRecord = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
   const {
     tid,
     groupID,
@@ -110,7 +111,7 @@ export const updateSingleRecord = async (req, res) => {
 };
 
 export const deleteTopic = async (req, res) => {
-  let topicid = req.params.id;
+  let topicid = sanitize(req.params.id);
   await TopicReg.findByIdAndDelete(topicid)
     .then(() => {
       res.status(200).send({ status: "Deleted!" });
@@ -123,8 +124,7 @@ export const deleteTopic = async (req, res) => {
 
 //get group id using leader's email
 export const getGroupID = async (req, res) => {
-  console.log("req.params", req.params);
-  const leaderEmail = req.params.leaderEmail;
+  const leaderEmail = sanitize(req.params.leaderEmail);
 
   await TopicReg.findOne({ leaderEmail: leaderEmail })
 
