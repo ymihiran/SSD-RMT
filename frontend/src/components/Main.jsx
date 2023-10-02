@@ -19,27 +19,31 @@ import {
   MDBRow,
   MDBCol,
 } from "mdb-react-ui-kit";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { useSelector } from "react-redux";
 
 import Featured from "./Featured";
+//import { set } from "mongoose";
 
 export default function Main() {
   const auth = useSelector((state) => state.auth);
 
   const { user } = auth;
-  //const [userdata, setUserdata] = useState([]);
+  const [userdata, setUserdata] = useState([]);
   let history = useHistory();
 
-  // useEffect(() => {
-  //   // setUserdata(JSON.parse(localStorage.getItem("user") || "[]"));
-  //   // console.log("USer Role", userdata.user_role);
-  // }, []);
+  useEffect(() => {
+    setUserdata(user);
+  }, [user]);
 
   if (user.user_role == null) {
     history.push("/login");
-  } else if (user.user_role === "Student") {
+    localStorage.getItem("firstLogin");
+    if (localStorage.getItem("firstLogin") === "true") {
+      history.push("/");
+    }
+  } else if (userdata.user_role === "Student") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -335,7 +339,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (user.user_role === "Admin") {
+  } else if (userdata.user_role === "Admin") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -631,8 +635,8 @@ export default function Main() {
       </div>
     );
   } else if (
-    user.user_role === "Supervisor" ||
-    user.user_role === "Co-Supervisor"
+    userdata.user_role === "Supervisor" ||
+    userdata.user_role === "Co-Supervisor"
   ) {
     return (
       <div className="main-m-container">
@@ -922,7 +926,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (user.user_role === "Admin") {
+  } else if (userdata.user_role === "Admin") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>
@@ -1222,7 +1226,7 @@ export default function Main() {
         <div style={{ backgroundColor: "#84809F" }}></div>
       </div>
     );
-  } else if (user.user_role === "Panel Member") {
+  } else if (userdata.user_role === "Panel Member") {
     return (
       <div className="main-m-container">
         <div className="main-item-con"></div>

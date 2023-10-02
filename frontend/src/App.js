@@ -70,7 +70,7 @@ function App() {
     if (firstLogin) {
       const getToken = async () => {
         const res = await axios.post("http://localhost:8070/user/refresh_token", null, {
-          withCredentials: true, 
+          withCredentials: true,
         });
         dispatch({ type: "GET_TOKEN", payload: res.data.access_token });
       };
@@ -89,16 +89,14 @@ function App() {
       };
       getUser();
     }
+    console.log(token);
   }, [token, dispatch]);
 
   return (
     <div>
-
-
+      <ReactNotifications />
+      <Header />
       <Router>
-        <ReactNotifications />
-        <Header />
-        {/* <Routes> */}
         <Route path="/" exact component={Main} />
 
         <Route
@@ -159,7 +157,6 @@ function App() {
         <Route path="/chatGroup" exact component={chatGroupSupervisor} />
 
         <Route path="/AllSubmitDoc" component={AllSubmitDoc} />
-        {/* </Routes> */}
       </Router>
     </div>
   );
