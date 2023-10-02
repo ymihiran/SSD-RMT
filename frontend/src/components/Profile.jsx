@@ -5,6 +5,7 @@ import axios from "axios";
 import { useHistory, useLocation } from "react-router-dom";
 import { isLength, isMatch } from "./utils/validation/Validation";
 import { showSuccessMsg, showErrMsg } from "./utils/notification/Notification";
+import { useSelector } from "react-redux";
 
 const initialState = {
   name: "",
@@ -19,7 +20,10 @@ const initialState = {
 };
 
 export default function Profile() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const auth = useSelector((state) => state.auth);
+
+  const { userdata } = auth;
+  const [user, setUser] = useState(userdata);
   const [data, setData] = useState(initialState);
   const {
     name,
@@ -41,8 +45,10 @@ export default function Profile() {
       await axios
         .get(`http://localhost:8070/user/infor/${user._id}`)
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data));
-          setUser(JSON.parse(localStorage.getItem("user")));
+          //localStorage.setItem("user", JSON.stringify(res.data));
+          //setUser(JSON.parse(localStorage.getItem("user")));
+          //set user
+          setUser(res.data);
         })
         .catch((error) => {
           console.log("Oops! Error occured while fetching data.");

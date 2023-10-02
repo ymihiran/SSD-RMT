@@ -7,25 +7,60 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
+//Use CSRF Protection
+//import csrf from "csurf";
+
 const app = express();
 
-//server run in this port 8070
-const PORT = process.env.PORT || 8070;
-
-//Connect data base
-connectDB();
 
 // Enable security headers using helmet middleware
-app.use(helmet());
+//app.use(helmet());
 
-app.use(express.json());
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL // Replace with your allowed origin
+  origin: 'http://localhost:3000', 
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
-app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(express.json());
+app.use(bodyParser.json());
 
 
+// CSRF protection middleware configuration
+// const csrfProtection = csrf({
+//   cookie: {
+//     httpOnly: false, // Set the CSRF token as HTTP-only false
+//     sameSite: "strict", // Apply same-site cookie attribute for added security
+//     secure: false, // Set true to only set the cookie over HTTPS
+//   },
+// });
+
+// Generate and send a CSRF token for each request
+
+//*** Define All routes after this line to apply CSRF protection to them ***//
+
+
+//app.use(csrfProtection);
+
+
+// CSRF token verification middleware
+// app.use((req, res, next) => {
+//   //Use CSRF except for GET requests
+//   if (req.method === "GET") {
+//     return next();
+//   } else {
+//     res.locals.csrfToken = req.csrfToken(); // Send the CSRF token to the frontend
+//     next();
+//   }
+// });
+
+// Serve CSRF tokens
+// app.get("/api/csrf-token", (req, res) => {
+//   res.json({ csrfToken: req.csrfToken() });
+// });
+
+
+//*** Define Routes Here ***/
 
 // Document/ presentation Evaluate Route
 import evaluationRouter from "./routes/EvaluationRoute.js";
@@ -42,11 +77,11 @@ app.use("/topic", topicRouter);
 // Marking Schema Route
 import markingRouter from "./routes/markingschemes.js";
 
-app.use("/markingScheme",markingRouter);
+app.use("/markingScheme", markingRouter);
 
 // Evaluated Topics Route
 import evaluatedTopicRouter from "./routes/evaluatedtopics.js";
-app.use("/evaluatedTopic",evaluatedTopicRouter);
+app.use("/evaluatedTopic", evaluatedTopicRouter);
 
 
 //User Routes
@@ -88,6 +123,12 @@ app.use("/chat", msg);
 
 import reply from "./routes/chatReplyRoute.js";
 app.use("/chatReplies", reply);
+
+//server run in this port 8070
+const PORT = process.env.PORT || 8070;
+
+//Connect data base
+connectDB();
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
