@@ -4,20 +4,24 @@ import { ClassNames } from "@emotion/react";
 import "./CSS/st.css";
 import FileInput from "./FileInput";
 import { Store } from "react-notifications-component";
+import { useSelector } from "react-redux";
 
 export default function SubmitDocs() {
+  const auth = useSelector((state) => state.auth);
+
+  const { user } = auth;
   const [type, setType] = useState();
   const [userEmail, setuserEmail] = useState();
   useEffect(() => {
     setType(localStorage.getItem("SchemaType"));
-    setuserEmail(JSON.parse(localStorage.getItem("user")).email);
+    setuserEmail(user.email);
     //console.log(JSON.parse(localStorage.getItem("user")).email);
-  }, []);
+  }, [user.email]);
 
   //file upload
   const [data, setData] = useState({
     name: "upload",
-    email: JSON.parse(localStorage.getItem("user")).email,
+    email: user.email,
     GroupID: "",
     ResearchField: "",
     ResearchTopic: "",
@@ -38,6 +42,7 @@ export default function SubmitDocs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      alert(user.email);
       const url = process.env.REACT_APP_API_URL + "document";
       const { data: res } = await axios.post(url, data);
       console.log(res);

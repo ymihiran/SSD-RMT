@@ -24,7 +24,6 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { useSelector } from "react-redux";
 
 import Featured from "./Featured";
-//import { set } from "mongoose";
 
 export default function Main() {
   const auth = useSelector((state) => state.auth);
