@@ -12,6 +12,7 @@ import { Store } from "react-notifications-component";
 
 export default function AcceptTopic() {
   const auth = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.token);
   const { user } = auth;
   const [tid, settid] = useState();
   const [id, setid] = useState();
@@ -26,7 +27,7 @@ export default function AcceptTopic() {
   let history = useHistory();
 
   function authenticate() {
-    if (user.user_role === "Supervisor" && user.user_role === "Co-Supervisor") {
+    if (user.user_role !== "Supervisor" && user.user_role !== "Co-Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",
@@ -94,7 +95,9 @@ export default function AcceptTopic() {
 
     if (ans) {
       await axios
-        .put(`http://localhost:8070/topic/${id}`, updateTopic)
+        .put(`http://localhost:8070/topic/${id}`, updateTopic, {
+          headers: { Authorization: token },
+        })
         .then(() => {
           Store.addNotification({
             title: "Status Updated Successfully.",
