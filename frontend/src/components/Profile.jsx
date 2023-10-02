@@ -21,6 +21,7 @@ const initialState = {
 
 export default function Profile() {
   const auth = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.token);
 
   const { user } = auth;
   const [users, setUser] = useState(user);
@@ -43,10 +44,12 @@ export default function Profile() {
   useEffect(() => {
     async function getUser() {
       await axios
-        .get(`http://localhost:8070/user/infor`)
+        .get(`http://localhost:8070/user/infor`, {
+          headers: { Authorization: token },
+        })
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data));
-          setUser(JSON.parse(localStorage.getItem("user")));
+          setUser(res.data);
+          setData({ ...data, name: res.data.name, email: res.data.email });
         })
         .catch((error) => {
           console.log("Oops! Error occured while fetching data.");
@@ -88,7 +91,13 @@ export default function Profile() {
       setLoading(true);
       const res = await axios.post(
         "http//:localhost:8070/api/upload_avatar",
-        formData
+        formData,
+        {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: token,
+          },
+        }
       );
 
       setLoading(false);
@@ -100,16 +109,22 @@ export default function Profile() {
 
   async function updateInfor() {
     try {
-      axios.patch(`http://localhost:8070/user/update/${user.id}`, {
-        name: name ? name : user.name,
-        email: email ? email : user.email,
-        avatar: avatar ? avatar : user.avatar,
-        mobile: mobile ? mobile : user.mobile,
-      });
+      axios.patch(
+        `http://localhost:8070/user/update`,
+        {
+          name: name ? name : user.name,
+          email: email ? email : user.email,
+          avatar: avatar ? avatar : user.avatar,
+          mobile: mobile ? mobile : user.mobile,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
 
       setData({ ...data, err: "", success: "Updated Success!" });
-      window.location.reload(false);
-      window.location.reload(false);
+      // window.location.reload(false);
+      // window.location.reload(false);
     } catch (err) {
       setData({ ...data, err: err.response.data.msg, success: "" });
     }
@@ -127,9 +142,15 @@ export default function Profile() {
       return setData({ ...data, err: "Password did not match.", success: "" });
 
     try {
-      await axios.post(`http//:localhost:8070/user/reset}`, {
-        password,
-      });
+      await axios.post(
+        `http//:localhost:8070/user/reset}`,
+        {
+          password,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
 
       setData({ ...data, err: "", success: "Updated Success!" });
     } catch (err) {
@@ -148,6 +169,7 @@ export default function Profile() {
           <img
             className="img-side"
             src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"
+            alt="img"
           ></img>
         </div>
 
@@ -187,7 +209,7 @@ export default function Profile() {
               <center>
                 <img
                   src="https://196034-584727-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/2019/05/Office-Assistant-Profile-Photo.jpg"
-                  alt=""
+                  alt="avatar"
                 />
               </center>
             </div>

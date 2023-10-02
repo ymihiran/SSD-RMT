@@ -21,11 +21,11 @@ router.get('/allprof', auth, userCtrl.allusers)
 
 router.get('/panel/:id', auth, userCtrl.panelMembers)
 
-router.post('/reset/:id', auth, userCtrl.resetPassword)
+router.post('/reset', auth, userCtrl.resetPassword)
 
 router.delete('/delete/:id', auth, userCtrl.deleteUser)
 
-router.patch('/update/:id', auth, userCtrl.updateUser)
+router.patch('/update', auth, userCtrl.updateUser)
 
 router.get('/logout', userCtrl.logout)
 
