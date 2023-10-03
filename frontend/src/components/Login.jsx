@@ -61,7 +61,9 @@ function Login() {
       localStorage.setItem("firstLogin", true);
 
       dispatch(dispatchLogin());
+      document.cookie = "refreshtoken=" + res.data.refreshtoken;
       history.push("/");
+      window.location.reload();
     } catch (err) {
       err.response.data.msg &&
         setUser({ ...user, err: err.response.data.msg, success: "" });
@@ -168,16 +170,13 @@ function Login() {
           <br></br>
           <br></br>
           <div>
-            
             <GoogleLogin
               clientId="389472249003-m71iinf8p0reaih8q9hdo6qdjs78gfhq.apps.googleusercontent.com"
               buttonText="Login With Google"
               onSuccess={responseGoogle}
               cookiePolicy={"single_host_origin"}
             />{" "}
-          
           </div>
-
           <div className="bottom-t-container">
             <label className="bottom-t" style={{ color: "#FF5631" }}>
               {" "}

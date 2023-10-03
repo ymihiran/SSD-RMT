@@ -1,4 +1,4 @@
-//Created new middelware to provide the token authentication
+//Created new middelware to prevent insecure direct object access
 
 import jwt from 'jsonwebtoken';
 

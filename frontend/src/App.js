@@ -89,7 +89,6 @@ function App() {
       };
       getUser();
     }
-    console.log(token);
   }, [token, dispatch]);
 
   return (

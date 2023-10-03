@@ -3,8 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sanitize from 'mongo-sanitize';
 
-import {google} from 'googleapis';
-const {OAuth2} = google.auth
+import { google } from 'googleapis';
+const { OAuth2 } = google.auth
 
 const client = new OAuth2(process.env.MAILING_SERVICE_CLIENT_ID)
 
@@ -19,7 +19,7 @@ const userCtrl = {
         try {
 
 
-            if (!name || !email || !password || !mobile || !user_role || !reg_number)
+            if (!name || !email || !password)
                 return res.status(400).json({ msg: "Please fill in all fields." })
 
             if (!validateEmail(email))
@@ -31,15 +31,14 @@ const userCtrl = {
             if (password.length < 8)
                 return res.status(400).json({ msg: "Password must be at least 8 characters." })
 
-            //Encrypt the password
-            const passwordHash = await bcrypt.hash(password, 12)
+            //Encrypt the password with random salt value for further security
+            const saltpwd = await bcrypt.genSalt();
+            const passwordHash = await bcrypt.hash(password, saltpwd);
 
             const newUser = new Users({
                 name, email, password: passwordHash, mobile, user_role,
                 research_area, reg_number
             })
-
-            // const token = jwt.sign({ id: newUser._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" })
 
             await newUser.save();
 
@@ -221,86 +220,88 @@ const userCtrl = {
     // Google OAuth
     googleLogin: async (req, res) => {
         try {
-            const {tokenId} = req.body
+            const { tokenId } = req.body
 
-            const verify = await client.verifyIdToken({idToken: tokenId})
-            
-            const {email, name, picture} = verify.payload
+            const verify = await client.verifyIdToken({ idToken: tokenId })
+
+            const { email } = verify.payload
 
             const password = email + process.env.GOOGLE_SECRET
 
             const passwordHash = await bcrypt.hash(password, 12)
 
-            const user = await Users.findOne({email})
-            
+            const user = await Users.findOne({ email })
 
-            if(user){
+
+            if (user) {
                 const isMatch = await bcrypt.compare(password, user.password)
-                if(!isMatch) return res.status(400).json({msg: "Account Password is incorrect."})
+                if (!isMatch) return res.status(400).json({ msg: "Account Password is incorrect." })
 
-                const refresh_token = createRefreshToken({id: user._id})
-                res.cookie('refreshtoken', refresh_token, {
+                const refreshtoken = createRefreshToken({ id: user._id })
+
+
+                res.cookie('refreshtoken', refreshtoken, {
                     httpOnly: true,
                     path: '/',
-                    maxAge: 7*24*60*60*1000 // 7 days
-                })
+                    maxAge: 60 * 60 * 1000
+                });
 
-                res.json({msg: "Login success!"})
-            }else{
-                
-                return res.status(400).json({msg: "Account Does Not Exist."})
+                res.status(200).json({ msg: "Login success!", refreshtoken });
+            } else {
+
+                return res.status(400).json({ msg: "Account Does Not Exist." })
             }
 
 
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
 
 
     googleSignup: async (req, res) => {
         try {
-            const {tokenId} = req.body
+            const { tokenId } = req.body
 
-            const verify = await client.verifyIdToken({idToken: tokenId})
-            
-            const {email, name, picture} = verify.payload
+            const verify = await client.verifyIdToken({ idToken: tokenId })
+
+            const { email, name, picture } = verify.payload
 
             const password = email + process.env.GOOGLE_SECRET
 
             const passwordHash = await bcrypt.hash(password, 12)
 
-            const user = await Users.findOne({email})
+            const user = await Users.findOne({ email })
 
-            if(user)
+            if (user) {
+                return res.status(400).json({
+                    msg: "Already Have An Account!"
+                })
 
-            {
-                return res.status(400).json({msg: "Already Have An Account!"
-            })
 
-          
-            }else{
-                    const newUser = new Users({
+            } else {
+                const newUser = new Users({
                     name, email, password: passwordHash, avatar: picture
                 })
 
                 await newUser.save()
-                
-                const refresh_token = createRefreshToken({id: newUser._id})
-                res.cookie('refreshtoken', refresh_token, {
+
+                const refreshtoken = createRefreshToken({ id: user._id })
+
+
+                res.cookie('refreshtoken', refreshtoken, {
                     httpOnly: true,
                     path: '/',
-                    maxAge: 7*24*60*60*1000 // 7 days
-                })
+                    maxAge: 60 * 60 * 1000
+                });
 
-                res.json({msg: "Login success!"})
+                res.status(200).json({ msg: "Login success!", refreshtoken });
 
-                
             }
 
 
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
 
