@@ -3,6 +3,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sanitize from 'mongo-sanitize';
 
+import {google} from 'googleapis';
+const {OAuth2} = google.auth
+
+const client = new OAuth2(process.env.MAILING_SERVICE_CLIENT_ID)
+
+
 const userCtrl = {
 
     register: async (req, res) => {
@@ -209,6 +215,92 @@ const userCtrl = {
             }
         } catch (err) {
             return res.status(500).json({ msg: err.message });
+        }
+    },
+
+    // Google OAuth
+    googleLogin: async (req, res) => {
+        try {
+            const {tokenId} = req.body
+
+            const verify = await client.verifyIdToken({idToken: tokenId})
+            
+            const {email, name, picture} = verify.payload
+
+            const password = email + process.env.GOOGLE_SECRET
+
+            const passwordHash = await bcrypt.hash(password, 12)
+
+            const user = await Users.findOne({email})
+            
+
+            if(user){
+                const isMatch = await bcrypt.compare(password, user.password)
+                if(!isMatch) return res.status(400).json({msg: "Account Password is incorrect."})
+
+                const refresh_token = createRefreshToken({id: user._id})
+                res.cookie('refreshtoken', refresh_token, {
+                    httpOnly: true,
+                    path: '/',
+                    maxAge: 7*24*60*60*1000 // 7 days
+                })
+
+                res.json({msg: "Login success!"})
+            }else{
+                
+                return res.status(400).json({msg: "Account Does Not Exist."})
+            }
+
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+
+
+    googleSignup: async (req, res) => {
+        try {
+            const {tokenId} = req.body
+
+            const verify = await client.verifyIdToken({idToken: tokenId})
+            
+            const {email, name, picture} = verify.payload
+
+            const password = email + process.env.GOOGLE_SECRET
+
+            const passwordHash = await bcrypt.hash(password, 12)
+
+            const user = await Users.findOne({email})
+
+            if(user)
+
+            {
+                return res.status(400).json({msg: "Already Have An Account!"
+            })
+
+          
+            }else{
+                    const newUser = new Users({
+                    name, email, password: passwordHash, avatar: picture
+                })
+
+                await newUser.save()
+                
+                const refresh_token = createRefreshToken({id: newUser._id})
+                res.cookie('refreshtoken', refresh_token, {
+                    httpOnly: true,
+                    path: '/',
+                    maxAge: 7*24*60*60*1000 // 7 days
+                })
+
+                res.json({msg: "Login success!"})
+
+                
+            }
+
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
         }
     },
 

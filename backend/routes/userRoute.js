@@ -29,4 +29,8 @@ router.patch('/update', auth, userCtrl.updateUser)
 
 router.get('/logout', userCtrl.logout)
 
+router.post('/google_login', userCtrl.googleLogin)
+
+router.post('/google_signup', userCtrl.googleSignup)
+
 export default router;
