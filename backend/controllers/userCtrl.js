@@ -286,7 +286,7 @@ const userCtrl = {
 
                 await newUser.save()
 
-                const refreshtoken = createRefreshToken({ id: user._id })
+                const refreshtoken = createRefreshToken({ id: newUser._id })
 
 
                 res.cookie('refreshtoken', refreshtoken, {
