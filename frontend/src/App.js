@@ -63,7 +63,7 @@ function App() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const auth = useSelector((state) => state.auth);
-  const { isLogged, isAdmin } = auth;
+  const { isLogged, isAdmin, isSupervisor, isCoSupervisor, isStudent, isPanelMember } = auth;
 
   useEffect(() => {
     // Get CSRF token from backend
@@ -156,23 +156,23 @@ function App() {
         />
         <Route path="/register" exact component={Register} />
         <Route path="/login" exact component={Login} />
-        <Route path="/SubmitTopic" component={SubmitTopic} />
-        <Route path="/EvaluateTopic" component={EvaluateTopic} />
-        <Route path="/EvaluatedTopicList" component={EvaluatedTopicList} />
-        <Route path="/EditEvaluatedTopic" component={EditEvaluatedTopic} />
-        <Route path="/AcceptTopic" component={AcceptTopic} />
-        <Route path="/TopicList" component={TopicList} />
-        <Route path="/StdTopicList" component={StdTopicList} />
-        <Route path="/AddMarking" component={AddMarking} />
-        <Route path="/EditTopic" component={EditTopic} />
-        <Route path="/SubmitDocs" component={SubmitDocs} />
-        <Route path="/AllStudentGroup" component={AllStudentGroup} />
+        <Route path="/SubmitTopic" component={isStudent ? SubmitTopic : NotFound} />
+        <Route path="/EvaluateTopic" component={isPanelMember ? EvaluateTopic : NotFound} />
+        <Route path="/EvaluatedTopicList" component={isPanelMember ? EvaluatedTopicList: NotFound} />
+        <Route path="/EditEvaluatedTopic" component={isPanelMember ? EditEvaluatedTopic: NotFound} />
+        <Route path="/AcceptTopic" component={isSupervisor ? AcceptTopic: NotFound} />
+        <Route path="/TopicList" component={isSupervisor ? TopicList: NotFound} />
+        <Route path="/StdTopicList" component={isStudent ? StdTopicList: NotFound} />
+        <Route path="/AddMarking" component={isAdmin ? AddMarking: NotFound} />
+        <Route path="/EditTopic" component={isStudent ? EditTopic: NotFound} />
+        <Route path="/SubmitDocs" component={isStudent ? SubmitDocs: NotFound} />
+        <Route path="/AllStudentGroup" component={isAdmin ? AllStudentGroup: NotFound} />
 
-        <Route path="/AllCreateTypes" component={AllCreateTypes} />
-        <Route path="/MarkingList" component={MarkingList} />
-        <Route path="/EditMarking" component={EditMarking} />
-        <Route path="/doc" exact component={DocumentEvaluation} />
-        <Route path="/allDoc" component={AllDocuments} />
+        <Route path="/AllCreateTypes" component={ isAdmin ? AllCreateTypes: NotFound} />
+        <Route path="/MarkingList" component={isAdmin ? MarkingList: NotFound} />
+        <Route path="/EditMarking" component={isAdmin ? EditMarking: NotFound} />
+        <Route path="/doc" exact component={isPanelMember ? DocumentEvaluation: NotFound} />
+        <Route path="/allDoc" component={isPanelMember ? AllDocuments: NotFound} />
         <Route
           path="/reqCoSuper"
           exact
