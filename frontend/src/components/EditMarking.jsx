@@ -15,6 +15,7 @@ export default function EditMarking()  {
     const [marks, setMarks] = useState(null);
     const [criteria, setCriteria] = useState([]);
     const [extra, setExtra] = useState(null);
+    const [csrfToken, setCsrfToken] = useState('');
 
     let history = useHistory();
 
@@ -25,6 +26,20 @@ export default function EditMarking()  {
         setschemeType(localStorage.getItem('schemeType'));
         setMarks(localStorage.getItem('marks'));
         setCriteria((JSON.parse(localStorage.getItem('criteria')|| "[]")));
+        
+        const getCsrfToken = async () => {
+            try {
+              const response = await axios.get('http://localhost:8070/api/csrf-token', {
+                withCredentials: true,
+              });
+              setCsrfToken(response.data.csrfToken);
+            } catch (error) {
+              console.error('Error fetching CSRF token:', error);
+            }
+          };
+      
+          // Fetch CSRF token when the component mounts
+          getCsrfToken();
         
     },[])
 
@@ -118,7 +133,12 @@ export default function EditMarking()  {
                 criteria,
             };
 
-            axios.put(`http://localhost:8070/markingscheme/${id}`,updateMarking).then(()=>{
+            axios.put(`http://localhost:8070/markingscheme/${id}`,updateMarking,{
+                headers: { 
+                  'CSRF-Token': csrfToken,
+                },
+                withCredentials: true,
+              }).then(()=>{
 
                 Store.addNotification({
                     title: "Marking Scheme Updated Successfully.",
@@ -197,7 +217,12 @@ export default function EditMarking()  {
 
         let text = "Are you sure you want to delete?";
         if (1==1) {
-            axios.delete(`http://localhost:8070/markingscheme/${id}`).then(()=>{
+            axios.delete(`http://localhost:8070/markingscheme/${id}`,{
+                headers: { 
+                  'CSRF-Token': csrfToken,
+                },
+                withCredentials: true,
+              }).then(()=>{
 
                 Store.addNotification({
                     title: "Marking Scheme deleted successfully",

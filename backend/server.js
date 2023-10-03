@@ -6,11 +6,13 @@ import connectDB from "./db.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import csrf  from "csurf";
 
 //Use CSRF Protection
 //import csrf from "csurf";
 
 const app = express();
+
 
 
 // Enable security headers using helmet middleware
@@ -27,37 +29,40 @@ app.use(bodyParser.json());
 
 
 // CSRF protection middleware configuration
-// const csrfProtection = csrf({
-//   cookie: {
-//     httpOnly: false, // Set the CSRF token as HTTP-only false
-//     sameSite: "strict", // Apply same-site cookie attribute for added security
-//     secure: false, // Set true to only set the cookie over HTTPS
-//   },
-// });
+const csrfProtection = csrf({
+  cookie: {
+    httpOnly: false, // Set the CSRF token as HTTP-only false
+    sameSite: "strict", // Apply same-site cookie attribute for added security
+    secure: false, // Set true to only set the cookie over HTTPS
+  },
+});
 
 // Generate and send a CSRF token for each request
 
 //*** Define All routes after this line to apply CSRF protection to them ***//
 
+//User Routes
+import userRouter from "./routes/userRoute.js";
+app.use("/user", userRouter);
 
-//app.use(csrfProtection);
+app.use(csrfProtection);
 
 
 // CSRF token verification middleware
-// app.use((req, res, next) => {
-//   //Use CSRF except for GET requests
-//   if (req.method === "GET") {
-//     return next();
-//   } else {
-//     res.locals.csrfToken = req.csrfToken(); // Send the CSRF token to the frontend
-//     next();
-//   }
-// });
+app.use((req, res, next) => {
+  //Use CSRF except for GET requests
+  if (req.method === "GET") {
+    return next();
+  } else {
+    res.locals.csrfToken = req.csrfToken(); // Send the CSRF token to the frontend
+    next();
+  }
+});
 
 // Serve CSRF tokens
-// app.get("/api/csrf-token", (req, res) => {
-//   res.json({ csrfToken: req.csrfToken() });
-// });
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 
 //*** Define Routes Here ***/
@@ -84,9 +89,7 @@ import evaluatedTopicRouter from "./routes/evaluatedtopics.js";
 app.use("/evaluatedTopic", evaluatedTopicRouter);
 
 
-//User Routes
-import userRouter from "./routes/userRoute.js";
-app.use("/user", userRouter);
+
 
 import panelRouter from "./routes/PanelMemberRoute.js";
 app.use("/panel", panelRouter);
@@ -123,6 +126,18 @@ app.use("/chat", msg);
 
 import reply from "./routes/chatReplyRoute.js";
 app.use("/chatReplies", reply);
+
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+  const csrfToken = req.csrfToken();
+  
+  // Set CSRF token as an HTTP-only cookie
+  res.cookie('XSRF-TOKEN', csrfToken, {
+    httpOnly: true,
+    secure: true, // Set true for production, false for development
+  });
+
+  res.json({ message: 'CSRF token has been set as an HTTP-only cookie.' });
+});
 
 //server run in this port 8070
 const PORT = process.env.PORT || 8070;

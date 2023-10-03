@@ -1,7 +1,7 @@
 import "./CSS/topicsub.css";
 import "./CSS/btrap.css";
 //import './CSS/animate.css'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useHistory } from "react-router";
 import { ReactNotifications } from "react-notifications-component";
@@ -22,6 +22,24 @@ export default function AddMarking() {
   const [marks, setMarks] = useState(null);
   const [criteria, setCriteria] = useState([]);
   const [extra, setExtra] = useState(null);
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    const getCsrfToken = async () => {
+      try {
+        const response = await axios.get('http://localhost:8070/api/csrf-token', {
+          withCredentials: true,
+        });
+        setCsrfToken(response.data.csrfToken);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    // Fetch CSRF token when the component mounts
+    getCsrfToken();
+  }, []);
+
 
   function authenticate() {
     if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
@@ -51,6 +69,7 @@ export default function AddMarking() {
     authenticate();
   }, 0);
 
+  
   const handleCriteriaInput = (e) => {
     setExtra({ ...extra, [e.target.name]: e.target.value });
   };
@@ -133,7 +152,11 @@ export default function AddMarking() {
 
       axios
         .post("http://localhost:8070/markingScheme/", newMarking, {
-          headers: { Authorization: token },
+          headers: { 
+            Authorization: token,
+            'CSRF-Token': csrfToken,
+          },
+          withCredentials: true,
         })
         .then(() => {
           Store.addNotification({

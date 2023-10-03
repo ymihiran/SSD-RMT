@@ -66,15 +66,44 @@ function App() {
   const { isLogged, isAdmin } = auth;
 
   useEffect(() => {
-    const firstLogin = localStorage.getItem("firstLogin");
-    if (firstLogin) {
-      const getToken = async () => {
-        const res = await axios.post("http://localhost:8070/user/refresh_token", null, {
+    // Get CSRF token from backend
+    const getCsrfToken = async () => {
+      try {
+        const res = await axios.get('http://localhost:8070/api/csrf-token', {
           withCredentials: true,
         });
-        dispatch({ type: "GET_TOKEN", payload: res.data.access_token });
-      };
-      getToken();
+        const csrfToken = res.data.csrfToken;
+
+        // Set CSRF token in Axios default headers
+        axios.defaults.headers.post['X-CSRF-Token'] = csrfToken;
+
+        // Send refresh_token request
+        const refreshToken = async () => {
+          try {
+            const res = await axios.post(
+              'http://localhost:8070/user/refresh_token',
+              null,
+              {
+                withCredentials: true,
+              }
+            );
+            dispatch({ type: 'GET_TOKEN', payload: res.data.access_token });
+          } catch (error) {
+            // Handle refresh_token request error
+            console.error('Error refreshing token:', error);
+          }
+        };
+
+        refreshToken();
+      } catch (error) {
+        // Handle CSRF token request error
+        console.error('Error getting CSRF token:', error);
+      }
+    };
+
+    const firstLogin = localStorage.getItem('firstLogin');
+    if (firstLogin) {
+      getCsrfToken();
     }
   }, [auth.isLogged, dispatch]);
 

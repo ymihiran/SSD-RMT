@@ -2,7 +2,7 @@ import "./CSS/topicsub.css";
 import "./CSS/btrap.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useHistory } from "react-router";
+import { useHistory } from 'react-router-dom';
 import { Store } from "react-notifications-component";
 import { useSelector } from "react-redux";
 
@@ -68,6 +68,7 @@ export default function MarkingList() {
     localStorage.setItem("marks", marks);
     localStorage.setItem("criteria", JSON.stringify(criteria));
 
+    console.log("Pushing");
     history.push("/EditMarking");
   };
 
