@@ -8,9 +8,6 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import csrf  from "csurf";
 
-//Use CSRF Protection
-//import csrf from "csurf";
-
 const app = express();
 
 
