@@ -6,6 +6,7 @@ import axios from "axios";
 import { showErrMsg, showSuccessMsg } from "./utils/notification/Notification";
 import { dispatchLogin } from "../redux/actions/authAction";
 import { useDispatch } from "react-redux";
+import { GoogleLogin } from "react-google-login";
 
 function Login() {
   const initialState = {
@@ -43,6 +44,24 @@ function Login() {
       history.push("/");
       window.location.reload();
       document.cookie = "refreshtoken=" + res.data.refreshtoken;
+    } catch (err) {
+      err.response.data.msg &&
+        setUser({ ...user, err: err.response.data.msg, success: "" });
+    }
+  };
+
+  const responseGoogle = async (response) => {
+    console.log(response);
+    try {
+      const res = await axios.post("http://localhost:8070/user/google_login", {
+        tokenId: response.tokenId,
+      });
+
+      setUser({ ...user, err: "", success: res.data.msg });
+      localStorage.setItem("firstLogin", true);
+
+      dispatch(dispatchLogin());
+      history.push("/");
     } catch (err) {
       err.response.data.msg &&
         setUser({ ...user, err: err.response.data.msg, success: "" });
@@ -146,6 +165,19 @@ function Login() {
               Login
             </button>
           </form>
+          <br></br>
+          <br></br>
+          <div>
+            
+            <GoogleLogin
+              clientId="389472249003-m71iinf8p0reaih8q9hdo6qdjs78gfhq.apps.googleusercontent.com"
+              buttonText="Login With Google"
+              onSuccess={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+            />{" "}
+          
+          </div>
+
           <div className="bottom-t-container">
             <label className="bottom-t" style={{ color: "#FF5631" }}>
               {" "}
