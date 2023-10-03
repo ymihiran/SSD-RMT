@@ -2,7 +2,7 @@ import "./CSS/topicsub.css";
 import "./CSS/btrap.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import emailjs from "emailjs-com";
 import { useSelector } from "react-redux";
 
@@ -23,6 +23,7 @@ export default function AcceptTopic() {
   const [leaderEmail, setleaderEmail] = useState();
   const [comment, setacomment] = useState();
   const [status, setstatus] = useState();
+  const [csrfToken, setCsrfToken] = useState('');
 
   let history = useHistory();
 
@@ -64,6 +65,20 @@ export default function AcceptTopic() {
     setleaderEmail(localStorage.getItem("leaderEmail"));
     setacomment(localStorage.getItem("comment"));
     setstatus(localStorage.getItem("status"));
+
+    const getCsrfToken = async () => {
+      try {
+        const response = await axios.get('http://localhost:8070/api/csrf-token', {
+          withCredentials: true,
+        });
+        setCsrfToken(response.data.csrfToken);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    // Fetch CSRF token when the component mounts
+    getCsrfToken();
   }, []);
 
   async function submitData(e) {
@@ -96,7 +111,11 @@ export default function AcceptTopic() {
     if (ans) {
       await axios
         .put(`http://localhost:8070/topic/${id}`, updateTopic, {
-          headers: { Authorization: token },
+          headers: { 
+            Authorization: token,
+            'CSRF-Token': csrfToken,
+          },withCredentials: true,
+          
         })
         .then(() => {
           Store.addNotification({
