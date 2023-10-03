@@ -46,7 +46,7 @@ export default function Profile() {
         });
     }
     getUser();
-  }, [location]);
+  }, [data, location, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

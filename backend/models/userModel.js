@@ -26,11 +26,10 @@ const userSchema = new Schema(
 
     mobile: {
       type: String,
-      required: [true, "Please enter your mobile number"],
+      default: "",
     },
 
     user_role: {
-      required: [true, "Please select the user role"],
       type: String,
       default: "Student",
     },
@@ -40,7 +39,7 @@ const userSchema = new Schema(
     },
     reg_number: {
       type: String,
-      required: [true, "Please enter your registration number"],
+      default: "",
     },
   },
   {
