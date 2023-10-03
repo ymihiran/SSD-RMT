@@ -1,12 +1,16 @@
 import React from "react";
+import axios from "axios";
 
 export default function Header() {
+  const logout = async () => {
+    await axios.get("http://localhost:8070/user/logout");
+    localStorage.clear();
+    //clear cookie
+    document.cookie =
+      "refreshtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-  const logout=async ()=>{
-
-    localStorage.clear()
     window.location.href = "/login";
-  }
+  };
 
   return (
     <div>
@@ -44,7 +48,12 @@ export default function Header() {
                 </li>
 
                 <li className="nav-item">
-                  <a onClick={logout} style={{marginLeft:"1600%"}} className="nav-link" href="#">
+                  <a
+                    onClick={logout}
+                    style={{ marginLeft: "1600%" }}
+                    className="nav-link"
+                    href="#"
+                  >
                     Logout
                   </a>
                 </li>

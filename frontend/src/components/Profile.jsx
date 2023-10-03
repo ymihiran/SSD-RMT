@@ -5,6 +5,7 @@ import axios from "axios";
 import { useHistory, useLocation } from "react-router-dom";
 import { isLength, isMatch } from "./utils/validation/Validation";
 import { showSuccessMsg, showErrMsg } from "./utils/notification/Notification";
+import { useSelector } from "react-redux";
 
 const initialState = {
   name: "",
@@ -19,19 +20,13 @@ const initialState = {
 };
 
 export default function Profile() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const auth = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.token);
+
+  const { user } = auth;
+  const [users, setUser] = useState(user);
   const [data, setData] = useState(initialState);
-  const {
-    name,
-    email,
-    mobile,
-    user_role,
-    reg_number,
-    password,
-    cf_password,
-    err,
-    success,
-  } = data;
+  const { name, email, mobile, password, cf_password, err, success } = data;
   const [avatar, setAvatar] = useState(false);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
@@ -39,17 +34,19 @@ export default function Profile() {
   useEffect(() => {
     async function getUser() {
       await axios
-        .get(`http://localhost:8070/user/infor/${user._id}`)
+        .get(`http://localhost:8070/user/infor`, {
+          headers: { Authorization: token },
+        })
         .then((res) => {
-          localStorage.setItem("user", JSON.stringify(res.data));
-          setUser(JSON.parse(localStorage.getItem("user")));
+          setUser(res.data);
+          setData({ ...data });
         })
         .catch((error) => {
           console.log("Oops! Error occured while fetching data.");
         });
     }
     getUser();
-  }, [user._id, location]);
+  }, [location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,7 +81,13 @@ export default function Profile() {
       setLoading(true);
       const res = await axios.post(
         "http//:localhost:8070/api/upload_avatar",
-        formData
+        formData,
+        {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: token,
+          },
+        }
       );
 
       setLoading(false);
@@ -96,16 +99,23 @@ export default function Profile() {
 
   async function updateInfor() {
     try {
-      axios.patch(`http://localhost:8070/user/update/${user._id}`, {
-        name: name ? name : user.name,
-        email: email ? email : user.email,
-        avatar: avatar ? avatar : user.avatar,
-        mobile: mobile ? mobile : user.mobile,
-      });
+      console.log(name);
+      axios.patch(
+        `http://localhost:8070/user/update`,
+        {
+          name: name ? name : user.name,
+          email: email ? email : user.email,
+          avatar: avatar ? avatar : user.avatar,
+          mobile: mobile ? mobile : user.mobile,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
 
       setData({ ...data, err: "", success: "Updated Success!" });
-      window.location.reload(false);
-      window.location.reload(false);
+      // window.location.reload(false);
+      // window.location.reload(false);
     } catch (err) {
       setData({ ...data, err: err.response.data.msg, success: "" });
     }
@@ -123,9 +133,15 @@ export default function Profile() {
       return setData({ ...data, err: "Password did not match.", success: "" });
 
     try {
-      await axios.post(`http//:localhost:8070/user/reset/${user._id}`, {
-        password,
-      });
+      await axios.post(
+        `http//:localhost:8070/user/reset}`,
+        {
+          password,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
 
       setData({ ...data, err: "", success: "Updated Success!" });
     } catch (err) {
@@ -144,6 +160,7 @@ export default function Profile() {
           <img
             className="img-side"
             src="https://res.cloudinary.com/sliit-yasantha/image/upload/v1653068950/logo11_ggebb3.png"
+            alt="img"
           ></img>
         </div>
 
@@ -183,7 +200,7 @@ export default function Profile() {
               <center>
                 <img
                   src="https://196034-584727-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/2019/05/Office-Assistant-Profile-Photo.jpg"
-                  alt=""
+                  alt="avatar"
                 />
               </center>
             </div>

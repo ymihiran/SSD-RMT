@@ -1,4 +1,5 @@
 import SubmitDocRoute from "../models/SubmitDoc.js";
+import sanitize from 'mongo-sanitize';
 
 //Get submitted documents details
 export const getDocs = async (req, res) => {
@@ -14,8 +15,7 @@ export const getDocs = async (req, res) => {
 //Get student's documents details
 
 export const getSubmitDocs = async (req, res) => {
-  console.log("email", req.params.email);
-  const email = req.params.email;
+  const email = sanitize(req.params.email);
   SubmitDocRoute.find({ email: email })
 
     .then((data) => {
@@ -28,14 +28,13 @@ export const getSubmitDocs = async (req, res) => {
 
 //Get student's documents details
 export const SubmitDoc = async (req, res) => {
-  console.log("req.body", req.body);
-  const GroupID = req.body.GroupID;
-  const ResearchField = req.body.ResearchField;
-  const Document = req.body.song;
-  const DocType = req.body.DocType;
-  const email = req.body.email;
-  const Comment = req.body.Comment;
-  const ResearchTopic = req.body.ResearchTopic;
+  const GroupID = sanitize(req.body.GroupID);
+  const ResearchField = sanitize(req.body.ResearchField);
+  const Document = sanitize(req.body.song);
+  const DocType = sanitize(req.body.DocType);
+  const email = sanitize(req.body.email);
+  const Comment = sanitize(req.body.Comment);
+  const ResearchTopic = sanitize(req.body.ResearchTopic);
 
   const newType = new SubmitDocRoute({
     GroupID,
@@ -59,8 +58,8 @@ export const SubmitDoc = async (req, res) => {
 
 //update document status
 export const updateDocStatus = async (req, res) => {
-  const id = req.params.id;
-  const status = req.body.Status;
+  const id = sanitize(req.params.id);
+  const status = sanitize(req.body.Status);
 
   console.log("id", id);
   await SubmitDocRoute.findByIdAndUpdate(id, {

@@ -1,12 +1,13 @@
 import UplaodTemplateRoute from "../models/UploadTemplate.js";
+import sanitize from 'mongo-sanitize';
 
 export const UploadTemplate = async (req, res) => {
   console.log(req.body);
-  const AdminName = req.body.AdminName;
-  const Title = req.body.Title;
-  const SchemaType = req.body.SchemaType;
-  const Template = req.body.song;
-  const Description = req.body.Description;
+  const AdminName = sanitize(req.body.AdminName);
+  const Title = sanitize(req.body.Title);
+  const SchemaType = sanitize(req.body.SchemaType);
+  const Template = sanitize(req.body.song);
+  const Description = sanitize(req.body.Description);
 
   const newType = new UplaodTemplateRoute({
     AdminName,
@@ -39,7 +40,7 @@ export const getAllTypes = async (req, res) => {
 
 //DELETE A CREATE TYPE
 export const deleteTemplate = async (req, res) => {
-  let tempid = req.params.id;
+  let tempid = sanitize(req.params.id);
   console.log(tempid);
   await UplaodTemplateRoute.findByIdAndDelete(tempid)
     .then(() => {

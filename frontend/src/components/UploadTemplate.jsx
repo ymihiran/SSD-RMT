@@ -5,8 +5,12 @@ import "./CSS/st.css";
 import FileInput from "./FileInput";
 import { Store } from "react-notifications-component";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function UploadTemplate() {
+  const token = useSelector((state) => state.token);
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
   //file upload
   const [data, setData] = useState({
     name: "upload",
@@ -50,7 +54,7 @@ export default function UploadTemplate() {
   //USER AUTHENTICATE
 
   function authenticate() {
-    if (JSON.parse(localStorage.getItem("user") || "[]").user_role != "Admin") {
+    if (user.user_role !== "Admin" && user.user_role === "Supervisor") {
       history.push("/login");
       Store.addNotification({
         title: "You are not allowed!",
