@@ -11,6 +11,7 @@ export default function Header() {
 
     window.location.href = "/login";
   };
+  const firstLogin = localStorage.getItem("firstLogin");
 
   return (
     <div>
@@ -47,16 +48,18 @@ export default function Header() {
                   </a>
                 </li>
 
-                <li className="nav-item">
-                  <a
-                    onClick={logout}
-                    style={{ marginLeft: "1600%" }}
-                    className="nav-link"
-                    href="#"
-                  >
-                    Logout
-                  </a>
-                </li>
+                {firstLogin && (
+                  <li className="nav-item">
+                    <a
+                      onClick={logout}
+                      style={{ marginLeft: "1600%" }}
+                      className="nav-link"
+                      href="#"
+                    >
+                      Logout
+                    </a>
+                  </li>
+                )}
 
                 {/* <li className="nav-item">
                   <a className="nav-link" href="#">

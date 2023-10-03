@@ -10,7 +10,7 @@ import {
   isLength,
   isMatch,
 } from "./utils/validation/Validation.js";
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin } from "react-google-login";
 import { dispatchLogin } from "../redux/actions/authAction";
 import { useDispatch } from "react-redux";
 
@@ -112,22 +112,24 @@ function Register() {
   };
 
   const responseGoogle = async (response) => {
-
-    console.log(response)
+    console.log(response);
     try {
-                
-        const res = await axios.post('http://localhost:8070/user/google_signup', {tokenId: response.tokenId})
-       
-        setUser({...user, err:'', success: res.data.msg})
-        localStorage.setItem('firstLogin', true)
-  
-        dispatch(dispatchLogin())
-        history.push("/")
+      const res = await axios.post("http://localhost:8070/user/google_signup", {
+        tokenId: response.tokenId,
+      });
+
+      setUser({ ...user, err: "", success: res.data.msg });
+      localStorage.setItem("firstLogin", true);
+
+      dispatch(dispatchLogin());
+      history.push("/");
+      window.location.reload();
+      document.cookie = "refreshtoken=" + res.data.refreshtoken;
     } catch (err) {
-        err.response.data.msg && 
-        setUser({...user, err: err.response.data.msg, success: ''})
+      err.response.data.msg &&
+        setUser({ ...user, err: err.response.data.msg, success: "" });
     }
-  }
+  };
 
   return (
     <div className="topic-container">
@@ -326,18 +328,16 @@ function Register() {
           <br></br>
           <br></br>
 
-      <div>
-        <center>
-       <GoogleLogin
-        clientId="389472249003-m71iinf8p0reaih8q9hdo6qdjs78gfhq.apps.googleusercontent.com"
-        buttonText="Signup With Google"
-        onSuccess={responseGoogle}
-        cookiePolicy={'single_host_origin'}
-       
-       
-       /> </center>
-       
-       </div>
+          <div>
+            <center>
+              <GoogleLogin
+                clientId="389472249003-m71iinf8p0reaih8q9hdo6qdjs78gfhq.apps.googleusercontent.com"
+                buttonText="Signup With Google"
+                onSuccess={responseGoogle}
+                cookiePolicy={"single_host_origin"}
+              />{" "}
+            </center>
+          </div>
           <div className="bottom-t-container">
             <label className="bottom-t" style={{ color: "#FF5631" }}>
               {" "}
